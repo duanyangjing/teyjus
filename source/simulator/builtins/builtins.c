@@ -39,65 +39,154 @@
 #include "../../system/stream.h"
 
 /*****************************************************************/
+/* experiment to change builtins to be called dynamically        */
+/*****************************************************************/
+#include <dlfcn.h>
+#include "../abstmachine.h"
+/*****************************************************************/
 /* Builtin Dispatch Table                                        */
 /*****************************************************************/
 /* Builtin Dispatch Table size */
 #define BI_TAB_SIZE PERV_PREDEND - PERV_PREDSTART + 1
 
 /* Builtin Dispatch Table */
-static void (*BI_branchTab[BI_TAB_SIZE])() = 
+/* static void (*BI_branchTab[BI_TAB_SIZE])() =  */
+/* { */
+/*     BIMETA_solve,                 //BI_SOLVE */
+/*     BIEVAL_eval,                  //BI_EVAL */
+/*     BIMETA_not,                   //BI_NOT */
+/*     BIMETA_unify,                 //BI_UNIFY */
+
+/*     BICOMP_comp,                  //BI_INT_LT */
+/*     BICOMP_comp,                  //BI_INT_GT         */
+/*     BICOMP_comp,                  //BI_INT_LE         */
+/*     BICOMP_comp,                  //BI_INT_GE         */
+/*     BICOMP_comp,                  //BI_FLOAT_LT  */
+/*     BICOMP_comp,                  //BI_FLOAT_GT     */
+/*     BICOMP_comp,                  //BI_FLOAT_LE       */
+/*     BICOMP_comp,                  //BI_FLOAT_GE       */
+/*     BICOMP_comp,                  //BI_STR_LT       */
+/*     BICOMP_comp,                  //BI_STR_GT          */
+/*     BICOMP_comp,                  //BI_STR_LE       */
+/*     BICOMP_comp,                  //BI_STR_GE */
+
+/*     BIIO_openIn,                  //BI_IO_OPEN_IN */
+/*     BIIO_openOut,                 //BI_IO_OPEN_OUT */
+/*     BIIO_openApp,                 //BI_IO_OPEN_APP */
+/*     BIIO_closeIn,                 //BI_IO_CLOSE_IN */
+/*     BIIO_closeOut,                //BI_IO_CLOSE_OUT */
+/*     BIIO_openStr,                 //BI_IO_OPEN_STR */
+/*     BIIO_input,                   //BI_IO_INPUT */
+/*     BIIO_output,                  //BI_IO_OUTPUT */
+/*     BIIO_inputLine,               //BI_IO_INPUT_LINE */
+/*     BIIO_lookahead,               //BI_IO_LOOKAHEAD   */
+/*     BIIO_eof,                     //BI_IO_EOF */
+/*     BIIO_flush,                   //BI_IO_FLUSH */
+/*     BIIO_print,                   //BI_IO_PRINT */
+/*     BIIO_read,                    //BI_IO_READ */
+/*     BIIO_printTerm,               //BI_IO_PRINTTERM */
+/*     BIIO_termToStr,               //BI_IO_TERMTOSTR  */
+/*     BIIO_strToTerm,               //BI_IO_STRTOTERM */
+/*     BIIO_readTerm,                //BI_IO_READTERM  */
+/*     BIIO_getEnv,                  //BI_IO_GETENV */
+/*     BIIO_openSocket,              //BI_IO_OPEN_SOCKET */
+/*     BIIO_unixTime,                //BI_IO_UNIX_TIME */
+/*     BIIO_system                   //BI_SYSTEM */
+/* }; */
+
+
+
+/*****************************************************************/
+/* experiment to change builtins to be called dynamically        */
+/*****************************************************************/
+// builtin index map to function name to be dynamically linked
+char *BI_nameTab[BI_TAB_SIZE] = 
 {
-    BIMETA_solve,                 //BI_SOLVE
-    BIEVAL_eval,                  //BI_EVAL
-    BIMETA_not,                   //BI_NOT
-    BIMETA_unify,                 //BI_UNIFY
+    "BIMETA_solve",                 //BI_SOLVE
+    "BIEVAL_eval",                  //BI_EVAL
+    "BIMETA_not",                   //BI_NOT
+    "BIMETA_unify",                 //BI_UNIFY
 
-    BICOMP_comp,                  //BI_INT_LT
-    BICOMP_comp,                  //BI_INT_GT        
-    BICOMP_comp,                  //BI_INT_LE        
-    BICOMP_comp,                  //BI_INT_GE        
-    BICOMP_comp,                  //BI_FLOAT_LT 
-    BICOMP_comp,                  //BI_FLOAT_GT    
-    BICOMP_comp,                  //BI_FLOAT_LE      
-    BICOMP_comp,                  //BI_FLOAT_GE      
-    BICOMP_comp,                  //BI_STR_LT      
-    BICOMP_comp,                  //BI_STR_GT         
-    BICOMP_comp,                  //BI_STR_LE      
-    BICOMP_comp,                  //BI_STR_GE
+    "BICOMP_comp",                  //BI_INT_LT
+    "BICOMP_comp",                  //BI_INT_GT        
+    "BICOMP_comp",                  //BI_INT_LE        
+    "BICOMP_comp",                  //BI_INT_GE        
+    "BICOMP_comp",                  //BI_FLOAT_LT 
+    "BICOMP_comp",                  //BI_FLOAT_GT    
+    "BICOMP_comp",                  //BI_FLOAT_LE      
+    "BICOMP_comp",                  //BI_FLOAT_GE      
+    "BICOMP_comp",                  //BI_STR_LT      
+    "BICOMP_comp",                  //BI_STR_GT         
+    "BICOMP_comp",                  //BI_STR_LE      
+    "BICOMP_comp",                  //BI_STR_GE
 
-    BIIO_openIn,                  //BI_IO_OPEN_IN
-    BIIO_openOut,                 //BI_IO_OPEN_OUT
-    BIIO_openApp,                 //BI_IO_OPEN_APP
-    BIIO_closeIn,                 //BI_IO_CLOSE_IN
-    BIIO_closeOut,                //BI_IO_CLOSE_OUT
-    BIIO_openStr,                 //BI_IO_OPEN_STR
-    BIIO_input,                   //BI_IO_INPUT
-    BIIO_output,                  //BI_IO_OUTPUT
-    BIIO_inputLine,               //BI_IO_INPUT_LINE
-    BIIO_lookahead,               //BI_IO_LOOKAHEAD  
-    BIIO_eof,                     //BI_IO_EOF
-    BIIO_flush,                   //BI_IO_FLUSH
-    BIIO_print,                   //BI_IO_PRINT
-    BIIO_read,                    //BI_IO_READ
-    BIIO_printTerm,               //BI_IO_PRINTTERM
-    BIIO_termToStr,               //BI_IO_TERMTOSTR 
-    BIIO_strToTerm,               //BI_IO_STRTOTERM
-    BIIO_readTerm,                //BI_IO_READTERM 
-    BIIO_getEnv,                  //BI_IO_GETENV
-    BIIO_openSocket,              //BI_IO_OPEN_SOCKET
-    BIIO_unixTime,                //BI_IO_UNIX_TIME
-    BIIO_system                   //BI_SYSTEM
+    "BIIO_openIn",                  //BI_IO_OPEN_IN
+    "BIIO_openOut",                 //BI_IO_OPEN_OUT
+    "BIIO_openApp",                 //BI_IO_OPEN_APP
+    "BIIO_closeIn",                 //BI_IO_CLOSE_IN
+    "BIIO_closeOut",                //BI_IO_CLOSE_OUT
+    "BIIO_openStr",                 //BI_IO_OPEN_STR
+    "BIIO_input",                   //BI_IO_INPUT
+    "BIIO_output",                  //BI_IO_OUTPUT
+    "BIIO_inputLine",               //BI_IO_INPUT_LINE
+    "BIIO_lookahead",               //BI_IO_LOOKAHEAD  
+    "BIIO_eof",                     //BI_IO_EOF
+    "BIIO_flush",                   //BI_IO_FLUSH
+    "BIIO_print",                   //BI_IO_PRINT
+    "BIIO_read",                    //BI_IO_READ
+    "BIIO_printTerm",               //BI_IO_PRINTTERM
+    "BIIO_termToStr",               //BI_IO_TERMTOSTR 
+    "BIIO_strToTerm",               //BI_IO_STRTOTERM
+    "BIIO_readTerm",                //BI_IO_READTERM 
+    "BIIO_getEnv",                  //BI_IO_GETENV
+    "BIIO_openSocket",              //BI_IO_OPEN_SOCKET
+    "BIIO_unixTime",                //BI_IO_UNIX_TIME
+    "BIIO_system"                   //BI_SYSTEM
 };
 
 /* builtin index "register" */
 BI_BuiltinTabIndex BI_number;
 
+/* void BI_dispatch(int index) */
+/* { */
+/*     BI_number = (BI_BuiltinTabIndex)index; */
+/*     (*BI_branchTab[index])(); */
+/* } */
+
 void BI_dispatch(int index)
 {
+    printf("In BI_dispatch function");
     BI_number = (BI_BuiltinTabIndex)index;
-    (*BI_branchTab[index])();
-}
+    char *funName = BI_nameTab[index];
+    char *libName = "comp.so";
+    // this will later become a dedicated library path
+    char *libPath = "";
+    strcat(libPath, libName);
 
+    // Dynamically open the shared library 
+    void *handle = dlopen(libPath, RTLD_LAZY);
+    if (!handle) {
+	fprintf(stderr, "%s\n", dlerror());
+        exit(1);
+    }
+
+    printf("opened shared library");
+    void (*funStub)(DF_TermPtr*);
+    // Get a function pointer to wrapper function given by funName
+    funStub = dlsym(handle, strcat(funName, "_stub"));
+    char *error = dlerror();
+    if (error) {
+        fprintf(stderr, "%s\n", error);
+        exit(1);
+    }
+
+    // Need to set up args array to pass to the wrapper
+    DF_TermPtr lOp = (DF_TermPtr)AM_reg(1);
+    DF_TermPtr rOp = (DF_TermPtr)AM_reg(2);
+    DF_TermPtr args[2] = {lOp, rOp};
+    (*funStub)(args);
+    
+}
 /***************************######********************************************
  *                          Error Information
  *********************************######**************************************/

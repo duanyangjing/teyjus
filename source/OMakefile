@@ -19,8 +19,10 @@ INC = $(dir include)
 #
 
 OCAMLINCLUDES += $(CMP) $(DIS) $(SIM) $(LOD)
-OCAMLFLAGS= -w -A
+OCAMLFLAGS= -w -A -g
 CFLAGS += -g
+
+#BYTE_ENABLED = true
 
 ############################################################
 # Compilation files
@@ -284,9 +286,12 @@ if $(not $(file-exists prebuilt))
   # The simulator and linker require linking with C code
 
   section
+    #BYTE_ENABLED = true
+    #NATIVE_ENABLED = false
     StaticCLibrary(libsim, \
       $(SIM_C) $(SYS_C) $(TBL_C) $(FNT_C) $(LOD_C) $(LNK_C) $(INC_C))
     OCAML_CLIBS += libsim
+    #OCAMLCFLAGS = -custom
     OCamlProgram(tjsim, \
       $(SIM_MAIN) $(LOD_ML) $(CMP_ML) $(FNT_ML) $(FNT_ML_TO_C))
 

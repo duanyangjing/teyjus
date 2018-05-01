@@ -3,6 +3,7 @@
 *.cmi
 *.cmx
 *.a
+*~
 source/compiler/instr.ml
 source/compiler/instr.mli
 source/compiler/lplex.ml

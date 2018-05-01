@@ -36,7 +36,10 @@
 
 #ifndef COMPEXP_H
 #define COMPEXP_H
-
-void BICOMP_comp();
-
+/*****************************************************************/
+/* experiment to change builtins to be called dynamically        */
+/*****************************************************************/
+#include "../dataformats.h"
+//void BICOMP_comp();
+void BICOMP_comp_wrapper(DF_TermPtr args[]);
 #endif  //COMPEXP_H

@@ -1,0 +1,47 @@
+Disassembling from bytecode file: accumsig.lpo
+Bytecode version: 2
+Module name: accumsig
+
+LABEL               INSTRUCTION              OPERANDS
+
+
+Global kind table:
+
+Local kind table:
+
+Type skeleton table:
+0: int -> int -> o
+1: real -> real -> o
+2: int -> int -> int -> o
+3: A -> o
+
+Global constant table: 
+0: fact (No Fixity, precedence 0)
+    Env Size: 0, Type Skeleton: #0
+1: sine (No Fixity, precedence 0)
+    Env Size: 0, Type Skeleton: #1
+2: add (No Fixity, precedence 0)
+    Env Size: 0, Type Skeleton: #2
+3: foo (No Fixity, precedence 0)
+    Env Size: 1, Type Skeleton: #3
+
+Local constant table: 
+
+Hidden constant table: 
+
+String table:
+
+Implication Tables:
+
+Hash tables:
+
+Module table:
+  Predicate definitions possibly extending previous ones: 0
+  Exportdef predicates: 0
+  Local predicates: 0
+  Find function type: hash
+  In-core table size: 0
+
+Accumulated tables:
+
+Imported tables:
