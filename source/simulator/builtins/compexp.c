@@ -99,8 +99,8 @@
 /* experiment to change builtins to be called dynamically        */
 /*****************************************************************/
 // compile as shared library by
-// gcc -shared -fpic -o comp.so compexp.c ../abstmachine.c evalexp.c ../../system/error.c  ../dataformats.c
-int BICOMP_comp(DF_TermPtr lOp, DF_TermPtr rOp)
+// gcc -shared -fpic -o comp.so compexp.c ../abstmachine.c evalexp.c ../../system/error.c  ../dataformats.c ../hnorm.c ../hnormlocal.c
+int BICOMP_comp(DF_TermPtr lOp, DF_TermPtr rOp, BI_BuiltinTabIndex BI_number)
 {
     int success;
     
@@ -151,7 +151,7 @@ int BICOMP_comp(DF_TermPtr lOp, DF_TermPtr rOp)
 }
 
 
-void BICOMP_comp_wrapper(DF_TermPtr args[])
+int BICOMP_comp_stub(DF_TermPtr args[], BI_BuiltinTabIndex BI_number)
 {
     int success;
     DF_TermPtr lOp, rOp;
@@ -159,10 +159,7 @@ void BICOMP_comp_wrapper(DF_TermPtr args[])
     lOp = args[0];
     rOp = args[1];
         
-    success = BICOMP_comp(lOp, rOp);
+    success = BICOMP_comp(lOp, rOp, BI_number);
 
-    // TODO: maybe this better be put in BI_dispatch()
-    // should the shared library know AM stuff?
-    if (success) AM_preg = AM_cpreg;
-    else EM_THROW(EM_FAIL);
+    return success;
 }

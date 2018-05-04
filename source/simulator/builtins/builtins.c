@@ -159,27 +159,32 @@ void BI_dispatch(int index)
 	(*BI_branchTab[index])();
 	return;
     }	
-    printf("In BI_dispatch function");
+    printf("In BI_dispatch function\n");
     BI_number = (BI_BuiltinTabIndex)index;
-    char *funName = BI_nameTab[index];
+    
+    char libPath[128] = "";
+    char funName[128] = "";
+
     char *libName = "comp.so";
     // this will later become a dedicated library path
-    char *libPath = "";
-    char path[128] = "";
-    strcpy(path, libPath);
-    strcat(path, libName);
+    char *libDir = "";
+
+    strcat(libPath, libDir);
+    strcat(libPath, libName);
+    strcat(funName, BI_nameTab[index]);
+    strcat(funName, "_stub");
 
     // Dynamically open the shared library 
-    void *handle = dlopen(path, RTLD_LAZY);
+    void *handle = dlopen(libPath, RTLD_LAZY);
     if (!handle) {
 	fprintf(stderr, "%s\n", dlerror());
         exit(1);
     }
 
-    printf("opened shared library");
-    void (*funStub)(DF_TermPtr*);
+    printf("opened shared library %s\n", libPath);
+    int (*funStub)(DF_TermPtr*, BI_BuiltinTabIndex);
     // Get a function pointer to wrapper function given by funName
-    funStub = dlsym(handle, strcat(funName, "_stub"));
+    funStub = dlsym(handle, funName);
     char *error = dlerror();
     if (error) {
         fprintf(stderr, "%s\n", error);
@@ -190,7 +195,12 @@ void BI_dispatch(int index)
     DF_TermPtr lOp = (DF_TermPtr)AM_reg(1);
     DF_TermPtr rOp = (DF_TermPtr)AM_reg(2);
     DF_TermPtr args[2] = {lOp, rOp};
-    (*funStub)(args);
+    int success = (*funStub)(args, BI_number);
+
+    // TODO: maybe this better be put in BI_dispatch()
+    // should the shared library know AM stuff?
+    if (success) AM_preg = AM_cpreg;
+    else EM_THROW(EM_FAIL);
 }
 /***************************######********************************************
  *                          Error Information
