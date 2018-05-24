@@ -21,7 +21,7 @@ INC = $(dir include)
 OCAMLINCLUDES += $(CMP) $(DIS) $(SIM) $(LOD)
 # -ccopt -rdynamic pass the option -rdynamic to c linker, so that
 # symbols defined in tjsim can be visible from shared libraries
-OCAMLFLAGS= -w -A -g #-ccopt -rdynamic
+OCAMLFLAGS= -w -A -g -ccopt -rdynamic
 CFLAGS += -g
 
 #BYTE_ENABLED = true

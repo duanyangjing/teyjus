@@ -154,7 +154,7 @@ BI_BuiltinTabIndex BI_number;
 
 void BI_dispatch(int index)
 {
-    if (index < 3 || index > 15) {
+    if (index < 4 || index > 15) {
 	BI_number = (BI_BuiltinTabIndex)index;
 	(*BI_branchTab[index])();
 	return;
@@ -165,7 +165,7 @@ void BI_dispatch(int index)
     char libPath[128] = "";
     char funName[128] = "";
 
-    char *libName = "comp.so";
+    char *libName = "./lib/comp.so";
     // this will later become a dedicated library path
     char *libDir = "";
 
