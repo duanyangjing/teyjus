@@ -27,9 +27,9 @@
 
 #include "builtins.h"
 #include "meta.h"
-#include "evalexp.h"
-#include "compexp.h"
-#include "io.h"
+//#include "evalexp.h"
+//#include "compexp.h"
+//#include "io.h"
 #include "../mctypes.h"
 #include "../dataformats.h"
 #include "../printterm.h"
@@ -52,7 +52,7 @@
 static void (*BI_branchTab[BI_TAB_SIZE])() =
 {
     BIMETA_solve,                 //BI_SOLVE
-    BIEVAL_eval,                  //BI_EVAL
+    //BIEVAL_eval,                  //BI_EVAL
     BIMETA_not,                   //BI_NOT
     BIMETA_unify,                 //BI_UNIFY
 
@@ -69,28 +69,28 @@ static void (*BI_branchTab[BI_TAB_SIZE])() =
     /* BICOMP_comp,                  //BI_STR_LE */
     /* BICOMP_comp,                  //BI_STR_GE */
 
-    BIIO_openIn,                  //BI_IO_OPEN_IN
-    BIIO_openOut,                 //BI_IO_OPEN_OUT
-    BIIO_openApp,                 //BI_IO_OPEN_APP
-    BIIO_closeIn,                 //BI_IO_CLOSE_IN
-    BIIO_closeOut,                //BI_IO_CLOSE_OUT
-    BIIO_openStr,                 //BI_IO_OPEN_STR
-    BIIO_input,                   //BI_IO_INPUT
-    BIIO_output,                  //BI_IO_OUTPUT
-    BIIO_inputLine,               //BI_IO_INPUT_LINE
-    BIIO_lookahead,               //BI_IO_LOOKAHEAD
-    BIIO_eof,                     //BI_IO_EOF
-    BIIO_flush,                   //BI_IO_FLUSH
-    BIIO_print,                   //BI_IO_PRINT
-    BIIO_read,                    //BI_IO_READ
-    BIIO_printTerm,               //BI_IO_PRINTTERM
-    BIIO_termToStr,               //BI_IO_TERMTOSTR
-    BIIO_strToTerm,               //BI_IO_STRTOTERM
-    BIIO_readTerm,                //BI_IO_READTERM
-    BIIO_getEnv,                  //BI_IO_GETENV
-    BIIO_openSocket,              //BI_IO_OPEN_SOCKET
-    BIIO_unixTime,                //BI_IO_UNIX_TIME
-    BIIO_system                   //BI_SYSTEM
+    /* BIIO_openIn,                  //BI_IO_OPEN_IN */
+    /* BIIO_openOut,                 //BI_IO_OPEN_OUT */
+    /* BIIO_openApp,                 //BI_IO_OPEN_APP */
+    /* BIIO_closeIn,                 //BI_IO_CLOSE_IN */
+    /* BIIO_closeOut,                //BI_IO_CLOSE_OUT */
+    /* BIIO_openStr,                 //BI_IO_OPEN_STR */
+    /* BIIO_input,                   //BI_IO_INPUT */
+    /* BIIO_output,                  //BI_IO_OUTPUT */
+    /* BIIO_inputLine,               //BI_IO_INPUT_LINE */
+    /* BIIO_lookahead,               //BI_IO_LOOKAHEAD */
+    /* BIIO_eof,                     //BI_IO_EOF */
+    /* BIIO_flush,                   //BI_IO_FLUSH */
+    /* BIIO_print,                   //BI_IO_PRINT */
+    /* BIIO_read,                    //BI_IO_READ */
+    /* BIIO_printTerm,               //BI_IO_PRINTTERM */
+    /* BIIO_termToStr,               //BI_IO_TERMTOSTR */
+    /* BIIO_strToTerm,               //BI_IO_STRTOTERM */
+    /* BIIO_readTerm,                //BI_IO_READTERM */
+    /* BIIO_getEnv,                  //BI_IO_GETENV */
+    /* BIIO_openSocket,              //BI_IO_OPEN_SOCKET */
+    /* BIIO_unixTime,                //BI_IO_UNIX_TIME */
+    //BIIO_system                   //BI_SYSTEM
 };
 
 
@@ -154,7 +154,8 @@ BI_BuiltinTabIndex BI_number;
 
 void BI_dispatch(int index)
 {
-    if (index < 4 || index > 15) {
+    // meta
+    if (index == 0 || index == 2 || index == 3) {
 	BI_number = (BI_BuiltinTabIndex)index;
 	(*BI_branchTab[index])();
 	return;
@@ -164,15 +165,21 @@ void BI_dispatch(int index)
     
     char libPath[128] = "";
     char funName[128] = "";
-
-    char *libName = "./lib/comp.so";
-    // this will later become a dedicated library path
+    char libName[128] = "";
     char *libDir = "";
+    
+    // compexp and evalexp
+    if (index == 1 || index < 16) {
+	strcat(libName, "./lib/comp.so");
+    } else { // io
+	strcat(libName, "./lib/io.so");
+    }
+    // this will later become a dedicated library path
+    
 
     strcat(libPath, libDir);
     strcat(libPath, libName);
     strcat(funName, BI_nameTab[index]);
-    strcat(funName, "_stub");
 
     // Dynamically open the shared library 
     void *handle = dlopen(libPath, RTLD_LAZY);
@@ -182,7 +189,8 @@ void BI_dispatch(int index)
     }
 
     printf("opened shared library %s\n", libPath);
-    int (*funStub)(DF_TermPtr*, BI_BuiltinTabIndex);
+    //int (*funStub)(DF_TermPtr*, BI_BuiltinTabIndex);
+    void (*funStub)();
     // Get a function pointer to wrapper function given by funName
     funStub = dlsym(handle, funName);
     char *error = dlerror();
@@ -192,15 +200,14 @@ void BI_dispatch(int index)
     }
 
     // Need to set up args array to pass to the wrapper
-    DF_TermPtr lOp = (DF_TermPtr)AM_reg(1);
-    DF_TermPtr rOp = (DF_TermPtr)AM_reg(2);
-    DF_TermPtr args[2] = {lOp, rOp};
-    int success = (*funStub)(args, BI_number);
+    /* DF_TermPtr lOp = (DF_TermPtr)AM_reg(1); */
+    /* DF_TermPtr rOp = (DF_TermPtr)AM_reg(2); */
+    /* DF_TermPtr args[2] = {lOp, rOp}; */
+    /* int success = (*funStub)(args, BI_number); */
+    (*funStub)();
 
-    // TODO: maybe this better be put in BI_dispatch()
-    // should the shared library know AM stuff?
-    if (success) AM_preg = AM_cpreg;
-    else EM_THROW(EM_FAIL);
+    /* if (success) AM_preg = AM_cpreg; */
+    /* else EM_THROW(EM_FAIL); */
 }
 /***************************######********************************************
  *                          Error Information
