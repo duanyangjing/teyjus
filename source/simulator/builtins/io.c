@@ -25,21 +25,22 @@
  ****************************************************************************/
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h> 
-#include "builtins.h"
-#include "readterm.h"
-#include "../abstmachine.h" 
-#include "../dataformats.h" 
-#include "../hnorm.h"       
-#include "../mcstring.h"    
-#include "../mctypes.h"     
-#include "../trail.h"       
-#include "../printterm.h"   
-#include "../types.h"
-#include "../../tables/pervasives.h" 
-#include "../../system/error.h"      
-#include "../../system/stream.h"    
-#include "../../front/readterm_c.h" 
+#include <stdio.h>
+#include "../C-interface/interface.h"
+/* #include "builtins.h" */
+/* #include "readterm.h" */
+/* #include "../abstmachine.h"  */
+/* #include "../dataformats.h"  */
+/* #include "../hnorm.h"        */
+/* #include "../mcstring.h"     */
+/* #include "../mctypes.h"      */
+/* #include "../trail.h"        */
+/* #include "../printterm.h"    */
+/* #include "../types.h" */
+/* #include "../../tables/pervasives.h"  */
+/* #include "../../system/error.h"       */
+/* #include "../../system/stream.h"     */
+/* #include "../../front/readterm_c.h" */ 
 
 
 /* unify types */
@@ -570,39 +571,7 @@ void BIIO_termToStr()
     AM_preg = AM_cpreg;
 }
 
-/* type getenv string -> string -> o.
-        getenv Name Value.
-   Calls the Unix getenv function to unify Value with the value of
-   the environment variable given in Name. Name must be instantiated.
- */
-void BIIO_getEnv()
-{
-  //NOTE: os dependent; need to add code for other os besides UNIX.
-  char     *str, *envstr;
-  int      length, size;
-  MemPtr   strDataHead = AM_hreg;
-  MemPtr   strData     = strDataHead + DF_STRDATA_HEAD_SIZE;
-  MemPtr   nhreg;
 
-  str = BIIO_getStringFromTerm((DF_TermPtr)AM_reg(1));
-  if (!str) EM_error(BI_ERROR_UNBOUND_VARIABLE, "string");
-
-  envstr = getenv(str);
-  if (envstr == NULL) EM_error(BI_ERROR_UNSET_ENV_VAR, str);
-
-  length = strlen(envstr);
-  size   = MCSTR_numWords(length);
-  nhreg  = strData + size;
-  
-  AM_heapError(nhreg);
-  DF_mkStrDataHead(strDataHead);
-  MCSTR_toString((MCSTR_Str)strData, envstr, length);
-  AM_hreg = nhreg;   
- 
-  DF_mkStr((MemPtr)AM_reg(1), (DF_StrDataPtr)strDataHead);
-  AM_preg = AM_eqCode;
-  return;
-}
 
 /* type open_socket string -> int -> in_stream -> out_stream -> o.
         open_socket INet PortNo  In  Out.
@@ -617,40 +586,4 @@ void BIIO_getEnv()
 void BIIO_openSocket()
 {
   EM_error(BI_ERROR_NOT_IMPLEMENTED);
-}
-
-/* type  time  int -> int -> o
-   time X Y
-   Uses the Unix gettimeofday function to get the number of seconds and
-   microseconds in X and Y since 00:00 Universal Coordinated Time,
-   January 1, 1970. The arguments are expected to be uninstantiated
-   variables
-*/
-void BIIO_unixTime()
-{
-  //to be filled in
-  EM_error(BI_ERROR_NOT_IMPLEMENTED);
-}
-
-
-/* type  system  string -> int -> o
-   system Command ReturnCode.
-*/
-void BIIO_system()
-{
-  char * command = NULL;
-  int result = -1;
-
-  //Grab the command; it must be bound.
-  command = BIIO_getStringFromTerm((DF_TermPtr)AM_reg(1));
-  if (!command) EM_error(BI_ERROR_UNBOUND_VARIABLE, "string");
-
-  //Execute
-  result = system(command);
-
-  //Store result.
-  BIIO_bindVarToInt((DF_TermPtr)AM_reg(2), result);
-
-  AM_preg = AM_cpreg;
-  return;
 }

@@ -42,55 +42,71 @@
 /* experiment to change builtins to be called dynamically        */
 /*****************************************************************/
 #include <dlfcn.h>
-#include "../abstmachine.h"
 /*****************************************************************/
 /* Builtin Dispatch Table                                        */
 /*****************************************************************/
 /* Builtin Dispatch Table size */
+// TODO: change later
 #define BI_TAB_SIZE PERV_PREDEND - PERV_PREDSTART + 1
+
+void BIIO_termToStr();
+void BIIO_strToTerm();
+
+/*     BIMETA_solve,                 //BI_SOLVE */
+/*     BIMETA_not,                   //BI_NOT */
+/*     BIMETA_unify,                 //BI_UNIFY */
+/*     BIIO_termToStr,               //BI_IO_TERMTOSTR */
+/*     BIIO_strToTerm,               //BI_IO_STRTOTERM */
+/*     BIIO_read,                    //BI_IO_READ */
+/*     BIIO_readTerm,                //BI_IO_READTERM */
+
+// DJ: this is just a place holder for BIs that has been externalized
+void foo() {
+    return;
+}
 
 static void (*BI_branchTab[BI_TAB_SIZE])() =
 {
     BIMETA_solve,                 //BI_SOLVE
-    //BIEVAL_eval,                  //BI_EVAL
+    foo,                  //BI_EVAL
     BIMETA_not,                   //BI_NOT
     BIMETA_unify,                 //BI_UNIFY
 
-    /* BICOMP_comp,                  //BI_INT_LT */
-    /* BICOMP_comp,                  //BI_INT_GT */
-    /* BICOMP_comp,                  //BI_INT_LE */
-    /* BICOMP_comp,                  //BI_INT_GE */
-    /* BICOMP_comp,                  //BI_FLOAT_LT */
-    /* BICOMP_comp,                  //BI_FLOAT_GT */
-    /* BICOMP_comp,                  //BI_FLOAT_LE */
-    /* BICOMP_comp,                  //BI_FLOAT_GE */
-    /* BICOMP_comp,                  //BI_STR_LT */
-    /* BICOMP_comp,                  //BI_STR_GT */
-    /* BICOMP_comp,                  //BI_STR_LE */
-    /* BICOMP_comp,                  //BI_STR_GE */
+    foo,                  //BI_INT_LT
+    foo,                  //BI_INT_GT        
+    foo,                  //BI_INT_LE        
+    foo,                  //BI_INT_GE        
+    foo,                  //BI_FLOAT_LT 
+    foo,                  //BI_FLOAT_GT    
+    foo,                  //BI_FLOAT_LE      
+    foo,                  //BI_FLOAT_GE      
+    foo,                  //BI_STR_LT      
+    foo,                  //BI_STR_GT         
+    foo,                  //BI_STR_LE      
+    foo,                  //BI_STR_GE
 
-    /* BIIO_openIn,                  //BI_IO_OPEN_IN */
-    /* BIIO_openOut,                 //BI_IO_OPEN_OUT */
-    /* BIIO_openApp,                 //BI_IO_OPEN_APP */
-    /* BIIO_closeIn,                 //BI_IO_CLOSE_IN */
-    /* BIIO_closeOut,                //BI_IO_CLOSE_OUT */
-    /* BIIO_openStr,                 //BI_IO_OPEN_STR */
-    /* BIIO_input,                   //BI_IO_INPUT */
-    /* BIIO_output,                  //BI_IO_OUTPUT */
-    /* BIIO_inputLine,               //BI_IO_INPUT_LINE */
-    /* BIIO_lookahead,               //BI_IO_LOOKAHEAD */
-    /* BIIO_eof,                     //BI_IO_EOF */
-    /* BIIO_flush,                   //BI_IO_FLUSH */
-    /* BIIO_print,                   //BI_IO_PRINT */
-    /* BIIO_read,                    //BI_IO_READ */
-    /* BIIO_printTerm,               //BI_IO_PRINTTERM */
-    /* BIIO_termToStr,               //BI_IO_TERMTOSTR */
-    /* BIIO_strToTerm,               //BI_IO_STRTOTERM */
-    /* BIIO_readTerm,                //BI_IO_READTERM */
-    /* BIIO_getEnv,                  //BI_IO_GETENV */
-    /* BIIO_openSocket,              //BI_IO_OPEN_SOCKET */
-    /* BIIO_unixTime,                //BI_IO_UNIX_TIME */
-    //BIIO_system                   //BI_SYSTEM
+    foo,                  //BI_IO_OPEN_IN
+    foo,                 //BI_IO_OPEN_OUT
+    foo,                 //BI_IO_OPEN_APP
+    foo,                 //BI_IO_CLOSE_IN
+    foo,                //BI_IO_CLOSE_OUT
+    foo,                 //BI_IO_OPEN_STR
+    foo,                   //BI_IO_INPUT
+    foo,                  //BI_IO_OUTPUT
+    foo,               //BI_IO_INPUT_LINE
+    foo,               //BI_IO_LOOKAHEAD  
+    foo,                     //BI_IO_EOF
+    foo,                   //BI_IO_FLUSH
+    foo,                   //BI_IO_PRINT
+    foo,                    //BI_IO_READ
+    foo,               //BI_IO_PRINTTERM
+    foo,               //BI_IO_TERMTOSTR 
+    foo,               //BI_IO_STRTOTERM
+    foo,                //BI_IO_READTERM 
+    foo,                  //BI_IO_GETENV
+    foo,              //BI_IO_OPEN_SOCKET
+    foo,                //BI_IO_UNIX_TIME
+    foo                   //BI_SYSTEM
 };
 
 
@@ -99,6 +115,7 @@ static void (*BI_branchTab[BI_TAB_SIZE])() =
 /* experiment to change builtins to be called dynamically        */
 /*****************************************************************/
 // builtin index map to function name to be dynamically linked
+// should align with builtin dispatch table index
 char *BI_nameTab[BI_TAB_SIZE] = 
 {
     "BIMETA_solve",                 //BI_SOLVE
@@ -141,6 +158,46 @@ char *BI_nameTab[BI_TAB_SIZE] =
     "BIIO_openSocket",              //BI_IO_OPEN_SOCKET
     "BIIO_unixTime",                //BI_IO_UNIX_TIME
     "BIIO_system"                   //BI_SYSTEM
+    /* "BIMETA_solve",                 //BI_SOLVE */
+    /* "BIMETA_not",                   //BI_NOT */
+    /* "BIMETA_unify",                 //BI_UNIFY */
+    /* "BIIO_termToStr",               //BI_IO_TERMTOSTR  */
+    /* "BIIO_strToTerm",               //BI_IO_STRTOTERM */
+    /* "BIIO_read",                    //BI_IO_READ */
+    /* "BIIO_readTerm",                //BI_IO_READTERM */
+    
+    /* "BIEVAL_eval",                  //BI_EVAL */
+    /* "BICOMP_comp",                  //BI_INT_LT */
+    /* "BICOMP_comp",                  //BI_INT_GT */
+    /* "BICOMP_comp",                  //BI_INT_LE */
+    /* "BICOMP_comp",                  //BI_INT_GE */
+    /* "BICOMP_comp",                  //BI_FLOAT_LT */
+    /* "BICOMP_comp",                  //BI_FLOAT_GT */
+    /* "BICOMP_comp",                  //BI_FLOAT_LE */
+    /* "BICOMP_comp",                  //BI_FLOAT_GE */
+    /* "BICOMP_comp",                  //BI_STR_LT */
+    /* "BICOMP_comp",                  //BI_STR_GT */
+    /* "BICOMP_comp",                  //BI_STR_LE */
+    /* "BICOMP_comp",                  //BI_STR_GE */
+
+    /* "BIIO_openIn",                  //BI_IO_OPEN_IN */
+    /* "BIIO_openOut",                 //BI_IO_OPEN_OUT */
+    /* "BIIO_openApp",                 //BI_IO_OPEN_APP */
+    /* "BIIO_closeIn",                 //BI_IO_CLOSE_IN */
+    /* "BIIO_closeOut",                //BI_IO_CLOSE_OUT */
+    /* "BIIO_openStr",                 //BI_IO_OPEN_STR */
+    /* "BIIO_input",                   //BI_IO_INPUT */
+    /* "BIIO_output",                  //BI_IO_OUTPUT */
+    /* "BIIO_inputLine",               //BI_IO_INPUT_LINE */
+    /* "BIIO_lookahead",               //BI_IO_LOOKAHEAD */
+    /* "BIIO_eof",                     //BI_IO_EOF */
+    /* "BIIO_flush",                   //BI_IO_FLUSH */
+    /* "BIIO_print",                   //BI_IO_PRINT */
+    /* "BIIO_printTerm",               //BI_IO_PRINTTERM */
+    /* "BIIO_openSocket",              //BI_IO_OPEN_SOCKET */
+    /* "BIIO_getEnv",                  //BI_IO_GETENV */
+    /* "BIIO_unixTime",                //BI_IO_UNIX_TIME */
+    /* "BIIO_system"                   //BI_SYSTEM */
 };
 
 /* builtin index "register" */
@@ -154,14 +211,14 @@ BI_BuiltinTabIndex BI_number;
 
 void BI_dispatch(int index)
 {
-    // meta
-    if (index == 0 || index == 2 || index == 3) {
-	BI_number = (BI_BuiltinTabIndex)index;
+    BI_number = (BI_BuiltinTabIndex)index;
+    // actual builtins
+    if (BI_number == BI_SOLVE || BI_number == BI_NOT || BI_number == BI_UNIFY) {
 	(*BI_branchTab[index])();
 	return;
-    }	
+    }
+    
     printf("In BI_dispatch function\n");
-    BI_number = (BI_BuiltinTabIndex)index;
     
     char libPath[128] = "";
     char funName[128] = "";
@@ -169,14 +226,15 @@ void BI_dispatch(int index)
     char *libDir = "";
     
     // compexp and evalexp
-    if (index == 1 || index < 16) {
+    if (BI_number == BI_EVAL || BI_number <= BI_STR_GE) {
 	strcat(libName, "./lib/comp.so");
-    } else { // io
+    } else if (BI_number >= BI_IO_OPEN_IN && BI_number <= BI_IO_READTERM){
 	strcat(libName, "./lib/io.so");
+    } else {
+	strcat(libName, "./lib/os.so");
     }
-    // this will later become a dedicated library path
     
-
+    // this will later become a dedicated library path
     strcat(libPath, libDir);
     strcat(libPath, libName);
     strcat(funName, BI_nameTab[index]);

@@ -1,5 +1,5 @@
 // compile as shared library by
-// gcc -shared -fpic -o comp.so compexp.c evalexp.c
+// gcc -g -shared -fpic -o comp.so compexp.c evalexp.c
 
 //////////////////////////////////////////////////////////////////////////////
 //Copyright 2008
@@ -38,11 +38,12 @@
  ****************************************************************************/
 #include "compexp.h"
 #include "evalexp.h"
-#include "builtins.h"
-#include "../abstmachine.h"  //to be modified
-#include "../dataformats.h"  //to be modified
-#include "../mcstring.h"     //to be modified
-#include "../../system/error.h" //to be modified
+#include "../C-interface/interface.h"
+/* #include "builtins.h" */
+/* #include "../abstmachine.h"  //to be modified */
+/* #include "../dataformats.h"  //to be modified */
+/* #include "../mcstring.h"     //to be modified */
+/* #include "../../system/error.h" //to be modified */
 
 void BICOMP_comp()
 {
