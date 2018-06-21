@@ -108,7 +108,9 @@ type pclause = Clause of pterm
  * exportdef p.
  * Otherwise this is the type of the constant defined by the user or in the 
  * pervasives *)
+(* DJ - add second rule, the string field stores c lib name *)
 type pconstant = Constant of psymbol list * ptype option * pos
+               | Extconst of psymbol list * ptype option * string * pos
 
 (* Kinds 
 * There are different categories of kinds. They are already classified

@@ -81,7 +81,7 @@ and aconstant =
   Constant of (symbol * afixity ref * int ref * bool ref * bool ref *
 	  bool ref * bool ref * bool ref * bool ref * askeleton option ref * 
     int ref * bool array option ref * bool array option ref *
-    acodeinfo option ref * aconstanttype ref * int ref * pos)
+    acodeinfo option ref * aconstanttype ref * int ref * string * pos)
 
 and aconstanttype =
     GlobalConstant
@@ -730,42 +730,42 @@ let isFixityPostfix = function
 (*  aconstant:                                                           *)
 (*************************************************************************)
 let string_of_constant = function
-  Constant(s,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_) ->
+  Constant(s,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_) ->
     Symbol.name s
 
 let getConstantPos = function
-  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,p) ->
+  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,p) ->
     p
 
 let getConstantFixityRef = function
-  Constant(_,fix,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_) ->
+  Constant(_,fix,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_) ->
     fix
     
 let getConstantFixity = function
-  Constant(_,fix,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_) ->
+  Constant(_,fix,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_) ->
     !fix
 
 let getConstantPrec = function
-  Constant(_,_,prec,_,_,_,_,_,_,_,_,_,_,_,_,_,_) ->
+  Constant(_,_,prec,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_) ->
     !prec
 
 let getConstantPrecRef = function
-  Constant(_,_,prec,_,_,_,_,_,_,_,_,_,_,_,_,_,_) ->
+  Constant(_,_,prec,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_) ->
     prec
 
 let getConstantSymbol = function
-  Constant(sym,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_) -> sym
+  Constant(sym,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_) -> sym
 
 let getConstantReducible = function
-  Constant(_,_,_,_,_,_,_,_,r,_,_,_,_,_,_,_,_) ->
+  Constant(_,_,_,_,_,_,_,_,r,_,_,_,_,_,_,_,_,_) ->
     !r
 
 let getConstantSkeleton = function
-  Constant(_,_,_,_,_,_,_,_,_,s,_,_,_,_,_,_,_) ->
+  Constant(_,_,_,_,_,_,_,_,_,s,_,_,_,_,_,_,_,_) ->
     !s
 
 let getConstantSkeletonValue = function 
-  Constant(_,_,_,_,_,_,_,_,_,s,_,_,_,_,_,_,_) ->
+  Constant(_,_,_,_,_,_,_,_,_,s,_,_,_,_,_,_,_,_) ->
     if Option.isSome (!s) then
       Option.get (!s)
     else
@@ -774,7 +774,7 @@ let getConstantSkeletonValue = function
 
 
 let getConstantSkeletonRef = function
-  Constant(_,_,_,_,_,_,_,_,_,s,_,_,_,_,_,_,_) ->
+  Constant(_,_,_,_,_,_,_,_,_,s,_,_,_,_,_,_,_,_) ->
     s
 
 let getConstantName = fun c ->
@@ -784,11 +784,11 @@ let getConstantPrintName = fun c ->
   (Symbol.printName (getConstantSymbol c))
 
 let getConstantType = function
-  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,ctype,_,_) ->
+  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,ctype,_,_,_) ->
     !ctype
 
 let getConstantTypeRef = function
-  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,ctype,_,_) ->
+  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,ctype,_,_,_) ->
     ctype
 
 let isGlobalConstant c = 
@@ -806,13 +806,13 @@ let isPervasiveConstant c =
   | _ -> false
 
 let getConstantCodeInfo = function
-  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,ci,_,_,_) ->
+  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,ci,_,_,_,_) ->
     ci
 
 let setConstantCodeInfo c codeInfo = (getConstantCodeInfo c) := codeInfo
 
 let getConstantCodeInfoBuiltinIndex = function
-  Constant(sym,_,_,_,_,_,_,_,_,_,_,_,_,ci,_,_,_) ->
+  Constant(sym,_,_,_,_,_,_,_,_,_,_,_,_,ci,_,_,_,_) ->
    match (!ci) with
      Some(Builtin(index)) -> index
    | Some(_) -> 
@@ -825,7 +825,7 @@ let getConstantCodeInfoBuiltinIndex = function
 
 (* retrieve the offset field in the clausesBlock of the pred *)
 let getConstantCodeInfoClausesIndex = function
-  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,ci,_,_,_) ->
+  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,ci,_,_,_,_) ->
    match (!ci) with
      Some(Clauses(_,_,offset,_)) -> !offset
    | Some(_) -> 
@@ -836,7 +836,7 @@ let getConstantCodeInfoClausesIndex = function
          "getConstantCodeInfoClausesIndex: no definition")   
 
 let constantHasCode = function
-  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,ci,_,_,_) ->
+  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,ci,_,_,_,_) ->
    match (!ci) with
      Some(_) -> true
    | None -> false
@@ -883,32 +883,32 @@ let getConstantTypeEnvSize search constant =
       (Errormsg.impossible Errormsg.none
         "Absyn.getConstantTypeEnvSize: constant has no skeleton.")
   else
-    let Constant(_,_,_,_,_,_,_,_,_,_,s,_,_,_,_,_,_) = constant in
+    let Constant(_,_,_,_,_,_,_,_,_,_,s,_,_,_,_,_,_,_) = constant in
     !s
     
   
 let getConstantTypeEnvSizeRef = function
-  Constant(_,_,_,_,_,_,_,_,_,_,s,_,_,_,_,_,_) ->
+  Constant(_,_,_,_,_,_,_,_,_,_,s,_,_,_,_,_,_,_) ->
     s
 
 let getConstantSkeletonNeededness = function
-  Constant(_,_,_,_,_,_,_,_,_,_,_,n,_,_,_,_,_) ->
+  Constant(_,_,_,_,_,_,_,_,_,_,_,n,_,_,_,_,_,_) ->
     !n
 
 let getConstantSkeletonNeedednessRef = function
-  Constant(_,_,_,_,_,_,_,_,_,_,_,n,_,_,_,_,_) ->
+  Constant(_,_,_,_,_,_,_,_,_,_,_,n,_,_,_,_,_,_) ->
     n
 
 let getConstantNeededness = function
-  Constant(_,_,_,_,_,_,_,_,_,_,_,_,n,_,_,_,_) ->
+  Constant(_,_,_,_,_,_,_,_,_,_,_,_,n,_,_,_,_,_) ->
     !n
 
 let getConstantNeedednessRef = function
-  Constant(_,_,_,_,_,_,_,_,_,_,_,_,n,_,_,_,_) ->
+  Constant(_,_,_,_,_,_,_,_,_,_,_,_,n,_,_,_,_,_) ->
     n
 
 let getConstantNeedednessValue = function
-  Constant(_,_,_,_,_,_,_,_,_,_,_,_,n,_,_,_,_) ->
+  Constant(_,_,_,_,_,_,_,_,_,_,_,_,n,_,_,_,_,_) ->
     if Option.isSome (!n) then
       Option.get (!n)
     else
@@ -917,43 +917,43 @@ let getConstantNeedednessValue = function
         "Absyn.getConstantNeedednessValue: invalid neededness"
 
 let getConstantNoDefs = function
-  Constant(_,_,_,_,_,nd,_,_,_,_,_,_,_,_,_,_,_) ->
+  Constant(_,_,_,_,_,nd,_,_,_,_,_,_,_,_,_,_,_,_) ->
     !nd
 
 let getConstantNoDefsRef = function
-  Constant(_,_,_,_,_,nd,_,_,_,_,_,_,_,_,_,_,_) ->
+  Constant(_,_,_,_,_,nd,_,_,_,_,_,_,_,_,_,_,_,_) ->
     nd
 
 let getConstantClosed = function
-  Constant(_,_,_,_,_,_,c,_,_,_,_,_,_,_,_,_,_) ->
+  Constant(_,_,_,_,_,_,c,_,_,_,_,_,_,_,_,_,_,_) ->
     !c
 
 let getConstantClosedRef = function
-  Constant(_,_,_,_,_,_,c,_,_,_,_,_,_,_,_,_,_) ->
+  Constant(_,_,_,_,_,_,c,_,_,_,_,_,_,_,_,_,_,_) ->
     c
 
 let getConstantUseOnly = function
-  Constant(_,_,_,_,u,_,_,_,_,_,_,_,_,_,_,_,_) ->
+  Constant(_,_,_,_,u,_,_,_,_,_,_,_,_,_,_,_,_,_) ->
     !u
 
 let getConstantUseOnlyRef = function
-  Constant(_,_,_,_,u,_,_,_,_,_,_,_,_,_,_,_,_) ->
+  Constant(_,_,_,_,u,_,_,_,_,_,_,_,_,_,_,_,_,_) ->
     u
 
 let getConstantExportDef = function
-  Constant(_,_,_,e,_,_,_,_,_,_,_,_,_,_,_,_,_) ->
+  Constant(_,_,_,e,_,_,_,_,_,_,_,_,_,_,_,_,_,_) ->
     !e
 
 let getConstantExportDefRef = function
-  Constant(_,_,_,e,_,_,_,_,_,_,_,_,_,_,_,_,_) ->
+  Constant(_,_,_,e,_,_,_,_,_,_,_,_,_,_,_,_,_,_) ->
     e
   
 let getConstantIndex = function
-  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,i,_) ->
+  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,i,_,_) ->
     !i
 
 let setConstantIndex c index =
-  let Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,i,_) = c in
+  let Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,i,_,_) = c in
   i := index 
 
 let getConstantRedefinable c =
@@ -966,25 +966,25 @@ let makeGlobalConstant symbol fixity prec expDef useOnly tyEnvSize tySkel index 
   Constant(symbol, ref fixity, ref prec, ref expDef, ref useOnly, ref false,
 		   ref true, ref false, ref false, ref (Some tySkel), ref tyEnvSize,
 		   ref None, ref None, ref None, ref GlobalConstant, ref index, 
-		   Errormsg.none)
+		   "", Errormsg.none)
 
 let makeLocalConstant symbol fixity prec tyEnvSize tySkel index =
   Constant(symbol, ref fixity, ref prec, ref false, ref false, ref false,
 		   ref true, ref false, ref false, ref (Some tySkel), ref tyEnvSize,
 		   ref None, ref None, ref None, ref LocalConstant, ref index, 
-		   Errormsg.none)
+		   "", Errormsg.none)
 
 let makeAnonymousConstant i skel =
   Constant(Symbol.generate (), ref NoFixity, ref (-1), ref true, ref false,
     ref false, ref true, ref false, ref false, ref (Some(skel)), ref i,
     ref (Some(Array.make i true)), ref (Some(Array.make i true)),
-    ref None, ref AnonymousConstant, ref 0, Errormsg.none)
+    ref None, ref AnonymousConstant, ref 0, "", Errormsg.none)
 
 let makeHiddenConstant skel envsize =
   Constant(Symbol.symbol "", ref NoFixity, ref (-1), ref false, ref false,
     ref false, ref false, ref false, ref false, ref (Some skel), ref 0,
     ref (Some(Array.make envsize true)), ref (Some(Array.make envsize true)),
-    ref None, ref HiddenConstant, ref 0, Errormsg.none)
+    ref None, ref HiddenConstant, ref 0, "", Errormsg.none)
 
 let makeConstantTerm c env pos =
   (*let esize = getConstantTypeEnvSize false c in

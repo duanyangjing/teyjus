@@ -54,6 +54,7 @@ type pterm =
 type pclause = Clause of pterm
 
 type pconstant = Constant of psymbol list * ptype option * pos
+               | Extconst of psymbol list * ptype option * string * pos
 
 type pkind = Kind of psymbol list * int option * pos
 
@@ -157,6 +158,9 @@ let string_of_constant = function
   | Constant(symlist, None, pos) ->
       "Constant(" ^ (string_of_symbollist symlist) ^
         ", " ^ (string_of_pos pos) ^ ")"
+  | Extconst(symlist, Some t, libname, pos) ->
+      "Extconst(" ^ (string_of_symbollist symlist) ^ ", " ^ (string_of_type t) ^ 
+        ", " ^ libname ^ ", " ^ (string_of_pos pos) ^ ")"
         
 let string_of_typeabbrev = function
   | TypeAbbrev(name, arglist, ty, pos) ->

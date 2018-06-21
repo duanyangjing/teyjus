@@ -114,7 +114,7 @@ let listSeparatorConstant =
     (ref false), (ref false), (ref false), (ref true), (ref false), (ref (Some tyskel)),
     (ref 1), (ref (Some (Array.make 1 true))),
     (ref (Some (Array.init 1 (fun x -> if x >= 0 then false else true)))),
-    (ref None), (ref (Absyn.PervasiveConstant(false))), (ref 0), Errormsg.none)
+    (ref None), (ref (Absyn.PervasiveConstant(false))), (ref 0), "", Errormsg.none)
 
 let cutFailTerm = 
   Absyn.ApplicationTerm(Absyn.FirstOrderApplication(
