@@ -1813,6 +1813,22 @@ void SINSTR_builtin()                   //builtin n -- I1_X
     BI_dispatch(n);
 }
 
+// DJ - code added below
+void SINSTR_call_extern()               //call_extern cfun clib n -- S_S_I1_X
+{
+    DF_StrDataPtr  str2;
+    INSACC_SSI1X(str, str2, n);
+    // directly call the function with two strings as argument
+}
+
+void SINSTR_execute_extern()               //execute_extern cfun clib n -- S_S_I1_X
+{
+    DF_StrDataPtr  str2;
+    INSACC_SSI1X(str, str2, n);
+    // directly call the function with two strings as argument
+}
+// DJ - code added above
+
 void SINSTR_stop()                      //stop -- X
 {
     EM_THROW(EM_TOP_LEVEL);

@@ -53,8 +53,10 @@ type pterm =
 
 type pclause = Clause of pterm
 
-type pconstant = Constant of psymbol list * ptype option * pos
-               | Extconst of psymbol list * ptype option * string * pos
+type pconstant = Constant of psymbol list * ptype option *
+    pexterninfo option * pos
+
+and pexterninfo = (string * string)
 
 type pkind = Kind of psymbol list * int option * pos
 
@@ -152,15 +154,13 @@ let string_of_symbollist list =
   map_with_commas string_of_symbol list
 
 let string_of_constant = function
-  | Constant(symlist, Some t, pos) ->
+  | Constant(symlist, Some t, _, pos) ->
       "Constant(" ^ (string_of_symbollist symlist) ^
         ", " ^ (string_of_type t) ^ ", " ^ (string_of_pos pos) ^ ")"
-  | Constant(symlist, None, pos) ->
+  | Constant(symlist, None, _, pos) ->
       "Constant(" ^ (string_of_symbollist symlist) ^
         ", " ^ (string_of_pos pos) ^ ")"
-  | Extconst(symlist, Some t, libname, pos) ->
-      "Extconst(" ^ (string_of_symbollist symlist) ^ ", " ^ (string_of_type t) ^ 
-        ", " ^ libname ^ ", " ^ (string_of_pos pos) ^ ")"
+
         
 let string_of_typeabbrev = function
   | TypeAbbrev(name, arglist, ty, pos) ->
@@ -262,3 +262,11 @@ let getModuleClauses = function
   | _ ->
       Errormsg.impossible Errormsg.none
         "Preabsyn.getModuleClauses: invalid module"
+
+(* DJ - code added below *)        
+let isExternConstant = function
+  | Constant(_,_,e,_) -> Option.isSome e
+        
+let getConstantExternInfo = function
+  | Constant(_,_,e,_) -> Option.get e
+(*DJ - code added above *)

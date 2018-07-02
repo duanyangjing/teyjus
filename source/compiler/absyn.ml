@@ -81,7 +81,8 @@ and aconstant =
   Constant of (symbol * afixity ref * int ref * bool ref * bool ref *
 	  bool ref * bool ref * bool ref * bool ref * askeleton option ref * 
     int ref * bool array option ref * bool array option ref *
-    acodeinfo option ref * aconstanttype ref * int ref * string * pos)
+    acodeinfo option ref * aconstanttype ref * int ref *
+    aexterninfo option * pos)
 
 and aconstanttype =
     GlobalConstant
@@ -104,6 +105,9 @@ and acodeinfo =
     Builtin of int
   | Clauses of aclausesblock
 
+(* DJ - (cfunname, clibname) *)
+and aexterninfo = (astringinfo * astringinfo)
+  
 (*****************************************************************************
 *Variables (name based):
 *   (symbol, hidden constant, newtysy, type)
@@ -729,6 +733,12 @@ let isFixityPostfix = function
 (*************************************************************************)
 (*  aconstant:                                                           *)
 (*************************************************************************)
+(* DJ - code added below
+* getConstantLibname      
+* isExternConstant
+is defined in the section astringinfo
+   DJ - code added above *)
+  
 let string_of_constant = function
   Constant(s,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_) ->
     Symbol.name s
@@ -966,25 +976,25 @@ let makeGlobalConstant symbol fixity prec expDef useOnly tyEnvSize tySkel index 
   Constant(symbol, ref fixity, ref prec, ref expDef, ref useOnly, ref false,
 		   ref true, ref false, ref false, ref (Some tySkel), ref tyEnvSize,
 		   ref None, ref None, ref None, ref GlobalConstant, ref index, 
-		   "", Errormsg.none)
+		   None, Errormsg.none)
 
 let makeLocalConstant symbol fixity prec tyEnvSize tySkel index =
   Constant(symbol, ref fixity, ref prec, ref false, ref false, ref false,
 		   ref true, ref false, ref false, ref (Some tySkel), ref tyEnvSize,
 		   ref None, ref None, ref None, ref LocalConstant, ref index, 
-		   "", Errormsg.none)
+		   None, Errormsg.none)
 
 let makeAnonymousConstant i skel =
   Constant(Symbol.generate (), ref NoFixity, ref (-1), ref true, ref false,
     ref false, ref true, ref false, ref false, ref (Some(skel)), ref i,
     ref (Some(Array.make i true)), ref (Some(Array.make i true)),
-    ref None, ref AnonymousConstant, ref 0, "", Errormsg.none)
+    ref None, ref AnonymousConstant, ref 0, None, Errormsg.none)
 
 let makeHiddenConstant skel envsize =
   Constant(Symbol.symbol "", ref NoFixity, ref (-1), ref false, ref false,
     ref false, ref false, ref false, ref false, ref (Some skel), ref 0,
     ref (Some(Array.make envsize true)), ref (Some(Array.make envsize true)),
-    ref None, ref HiddenConstant, ref 0, "", Errormsg.none)
+    ref None, ref HiddenConstant, ref 0, None, Errormsg.none)
 
 let makeConstantTerm c env pos =
   (*let esize = getConstantTypeEnvSize false c in
@@ -1660,6 +1670,16 @@ and sameTermStructureList ts ts' =
   | _ -> false
 
 
+(* DJ - code added below *)
+let getConstantExternInfo = function
+  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,e,_) ->
+    Option.get e
+      
+let isExternConstant = function
+  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,e,_) ->
+    Option.isSome e
+(* DJ - code added above *)
+  
 (*************************************************************************)
 (*  agoal:                                                               *)
 (*************************************************************************)

@@ -73,6 +73,8 @@ let globalTypeAbbrevs = ref []
 
 let fixityList = ref []
 
+let clibname = ref ""
+
 let reverseResults () =
   importedModList := List.rev !importedModList;
   accumulatedModList := List.rev !accumulatedModList;
@@ -111,7 +113,9 @@ let clearResults () =
 
   globalTypeAbbrevs := [];
 
-  fixityList := []
+  fixityList := [];
+
+  clibname := ""
 
 (**********************************************************************
 *getPos:
@@ -168,8 +172,8 @@ let errorEof pos msg =
 %}
 
 
-%token MODULE END IMPORT ACCUMULATE ACCUMSIG USESIG LOCAL
-%token LOCALKIND CLOSED SIG KIND TYPE TYPEABBREV EXPORTDEF
+%token MODULE END IMPORT ACCUMULATE ACCUMSIG USESIG LOCAL CLIB
+%token LOCALKIND CLOSED SIG KIND TYPE TYPEABBREV EXPORTDEF EXTERN
 %token USEONLY INFIXL INFIX INFIXR PREFIX PREFIXR
 %token POSTFIX POSTFIXL COLONDASH
 %token IMPLIES INFIXLAMBDA TYARROW CUT PI SIGMA COMMA
@@ -273,6 +277,9 @@ sigpreamble:
   | sigpreamble ACCUMSIG cvidlist PERIOD
       { accumulatedSigList := $3 @ !accumulatedSigList }
 
+  | sigpreamble CLIB ID PERIOD
+      { clibname := getIDName $3}
+
 cvidlist:
   | tok                       { (makeSymbol $1) :: [] }
   | cvidlist COMMA ID         { (makeSymbol $3) :: $1 }
@@ -308,8 +315,14 @@ signdeclaux:
       { globalKinds := Kind($2, Some $3, getPos 1) :: !globalKinds }
 
   | TYPE idlist type
-      { globalConstants := Constant($2, Some $3, getPos 1) :: !globalConstants }
+      { globalConstants :=
+          Constant($2, Some $3, None, getPos 1) :: !globalConstants }
 
+  | EXTERN TYPE ID ID type
+      { globalConstants :=
+          Constant([makeSymbol $3], Some $5, Some(getIDName $4, !clibname), getPos 1) ::
+            !globalConstants }
+                        
   | TYPEABBREV LPAREN tok arglist RPAREN type
       { globalTypeAbbrevs :=
           TypeAbbrev(makeSymbol $3, (List.map makeSymbol $4), $6, getPos 1) ::
@@ -331,16 +344,16 @@ signdeclaux:
           fixityList := Fixity($2, $1, $3, getFixityPos $1) :: !fixityList }
 
   | EXPORTDEF idlist
-      { exportList := Constant($2, None, getPos 1) :: !exportList }
+      { exportList := Constant($2, None, None, getPos 1) :: !exportList }
 
   | EXPORTDEF idlist type
-      { exportList := Constant($2, Some $3, getPos 1) :: !exportList }
+      { exportList := Constant($2, Some $3, None, getPos 1) :: !exportList }
 
   | USEONLY idlist
-      { useOnlyList := Constant($2, None, getPos 1) :: !useOnlyList }
+      { useOnlyList := Constant($2, None, None, getPos 1) :: !useOnlyList }
 
   | USEONLY idlist type
-      { useOnlyList := Constant($2, Some $3, getPos 1) :: !useOnlyList }
+      { useOnlyList := Constant($2, Some $3, None, getPos 1) :: !useOnlyList }
 
 modsigndecl:
   | modsigndeclaux EOF          {Errormsg.error (getPos 1)
@@ -350,10 +363,10 @@ modsigndecl:
 
 modsigndeclaux:
   | LOCAL idlist 
-      { localConstants := Constant($2, None, getPos 1) :: !localConstants }
+      { localConstants := Constant($2, None, None, getPos 1) :: !localConstants }
 
   | LOCAL idlist type 
-      { localConstants := Constant($2, Some $3, getPos 1) :: !localConstants }
+      { localConstants := Constant($2, Some $3, None, getPos 1) :: !localConstants }
 
   | LOCALKIND idlist 
       { localKinds := Kind($2, None, getPos 1) :: !localKinds }
@@ -362,10 +375,10 @@ modsigndeclaux:
       { localKinds := Kind($2, Some $3, getPos 1) :: !localKinds }
 
   | CLOSED idlist 
-      { closedConstants := Constant($2, None, getPos 1) :: !closedConstants }
+      { closedConstants := Constant($2, None, None, getPos 1) :: !closedConstants }
 
   | CLOSED idlist type 
-      { closedConstants := Constant($2, Some $3, getPos 1) :: !closedConstants }
+      { closedConstants := Constant($2, Some $3, None, getPos 1) :: !closedConstants }
 
 kind:
   | kind_arrow                { $1 }

@@ -154,12 +154,15 @@ INSTR CATEGORY
          I1CWPX_LEN 16; I1CWPX_I1  1; I1CWPX_C   2 
 
   I1I1WPX [I1 I1 P P P P P WP X X X X]
-          I1I1WPX_LEN 16; I1I1WPX_I11 1; I1I1WPX_I12  2   
+          I1I1WPX_LEN 16; I1I1WPX_I11 1; I1I1WPX_I12  2
+
+  SSI1X  [S S I1 X X X X X X X X X]
+         SSI1X_LEN 16; SSI1X_S1 1; SSI1X_S2 3; SSI1X_I1 5
 
   CALL_I1_LEN 15
 
 
-INSTRUCTIONS 145
+INSTRUCTIONS 147
 
    /*  Instructions for term unification and creation  */
 
@@ -332,15 +335,17 @@ INSTRUCTIONS 145
    
    136       call_builtin               I1I1WPX      I1I1WPX_LEN;
    137       builtin                    I1X          I1X_LEN;
-   138       stop                       X            X_LEN;
-   139       halt                       X            X_LEN;
-   140       fail                       X            X_LEN;
+   138       call_extern                SSI1X        SSI1X_LEN;
+   139       extern                     SSI1X        SSI1X_LEN;
+   140       stop                       X            X_LEN;
+   141       halt                       X            X_LEN;
+   142       fail                       X            X_LEN;
 
    /* new added */
-   141       create_type_variable       EX           EX_LEN;
+   143       create_type_variable       EX           EX_LEN;
    
    /* resolved by the linker */
-   142       execute_link_only          CWPX         CWPX_LEN;     
-   143       call_link_only             I1CWPX       I1CWPX_LEN;
+   144       execute_link_only          CWPX         CWPX_LEN;     
+   145       call_link_only             I1CWPX       I1CWPX_LEN;
 
-   144       put_variable_te            RRX          RRX_LEN
+   146       put_variable_te            RRX          RRX_LEN

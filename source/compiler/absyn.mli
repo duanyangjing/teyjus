@@ -149,14 +149,15 @@ and atypeabbrev =
 * Code Info
 * Constant Type
 * Index
-* Extern lib name - DJ
+* Extern lib name (as StringData) - DJ
 * Position
 ***************************************************************************)
 and aconstant = 
   Constant of (symbol * afixity ref * int ref * bool ref * bool ref *
 	  bool ref * bool ref * bool ref * bool ref * askeleton option ref * 
     int ref * bool array option ref * bool array option ref *
-    acodeinfo option ref * aconstanttype ref * int ref * string * pos)
+    acodeinfo option ref * aconstanttype ref * int ref *
+    aexterninfo option * pos)
 
 and aconstanttype =
     GlobalConstant
@@ -179,12 +180,8 @@ and acodeinfo =
     Builtin of int
   | Clauses of aclausesblock
 
-(*****************************************************************************
-*DJ
-*External functions implemented in C, library name is stored
-*   (libname)
-*****************************************************************************)
-(*and aexterninfo = (string)*)
+(* DJ - (cfunname, clibname) *)
+and aexterninfo = (astringinfo * astringinfo)
   
 (*****************************************************************************
 *Variables (name based):
@@ -499,6 +496,9 @@ val makeConstantTerm : aconstant -> atype list -> pos -> aterm
 (*  val makeConstantType : aconstant -> atype *)
 val string_of_constant: aconstant -> string                                                           
 
+(* DJ - access libname field*)  
+val getConstantExternInfo: aconstant -> aexterninfo
+val isExternConstant: aconstant -> bool
 (*************************************************************************)
 (*  atypesymbol:                                                         *)
 (*************************************************************************)

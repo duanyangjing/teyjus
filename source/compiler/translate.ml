@@ -467,13 +467,13 @@ and translateKind = fun kind buildkind klist ->
 * Constructs a function to build a constant of Global kind, and
 * translates all constants using it.
 **********************************************************************)
-(* DJ - search "lib" for code changed*)
-and buildGlobalConstant = fun sym tyskel esize pos lib ->
+(* DJ - search "ext" for code changed*)
+and buildGlobalConstant = fun sym tyskel esize pos ext ->
   Absyn.Constant(sym, ref Absyn.NoFixity, ref (-1), ref false, ref false,
                  ref false, ref true, ref false, ref false, tyskel,
                  ref esize, ref (Some(Array.make esize true)), 
                  ref (Some(Array.make esize true)),
-                 ref None, ref Absyn.GlobalConstant, ref 0, lib, pos)
+                 ref None, ref Absyn.GlobalConstant, ref 0, ext, pos)
 
 and translateGlobalConstants clist kindtable typeabbrevtable =
   translateConstants clist kindtable typeabbrevtable buildGlobalConstant
@@ -481,12 +481,12 @@ and translateGlobalConstants clist kindtable typeabbrevtable =
 (**********************************************************************
 *translateLocalConstants:
 **********************************************************************)
-and buildLocalConstant sym tyskel esize pos lib =
+and buildLocalConstant sym tyskel esize pos ext =
   Absyn.Constant(sym, ref Absyn.NoFixity, ref (-1), ref false, ref false,
                  ref false, ref true, ref false, ref false, tyskel,
                  ref esize, ref (Some(Array.make esize true)), 
                  ref (Some(Array.make esize true)),
-                 ref None, ref Absyn.LocalConstant, ref 0, lib, pos)
+                 ref None, ref Absyn.LocalConstant, ref 0, ext, pos)
     
 and translateLocalConstants clist kindtable typeabbrevtable =
   translateConstants clist kindtable typeabbrevtable buildLocalConstant
@@ -495,12 +495,12 @@ and translateLocalConstants clist kindtable typeabbrevtable =
 *translateUseOnlyConstants:
 **********************************************************************)
 and translateUseOnlyConstants owner clist kindtable typeabbrevtable =
-  let buildConstant = fun sym tyskel esize pos lib ->
+  let buildConstant = fun sym tyskel esize pos ext ->
     Absyn.Constant(sym, ref Absyn.NoFixity, ref (-1), ref false, ref true,
                    ref true, ref true, ref false, ref false, tyskel,
                    ref esize, ref (Some(Array.make esize true)), 
                    ref (Some(Array.make esize true)),
-                   ref None, ref Absyn.GlobalConstant, ref 0, lib, pos)
+                   ref None, ref Absyn.GlobalConstant, ref 0, ext, pos)
   in
   translateConstants clist kindtable typeabbrevtable buildConstant
 
@@ -508,12 +508,12 @@ and translateUseOnlyConstants owner clist kindtable typeabbrevtable =
 *translateExportdefConstants:
 **********************************************************************)
 and translateExportdefConstants owner clist kindtable typeabbrevtable =
-  let buildConstant = fun sym tyskel esize pos lib ->
+  let buildConstant = fun sym tyskel esize pos ext ->
     Absyn.Constant(sym, ref Absyn.NoFixity, ref (-1), ref true, ref false,
                    ref (not owner), ref true, ref false, ref false, tyskel,
                    ref esize, ref (Some(Array.make esize true)), 
                    ref (Some(Array.make esize true)),
-                   ref None, ref Absyn.GlobalConstant, ref 0, lib, pos)
+                   ref None, ref Absyn.GlobalConstant, ref 0, ext, pos)
   in
   translateConstants clist kindtable typeabbrevtable buildConstant
 
@@ -521,12 +521,12 @@ and translateExportdefConstants owner clist kindtable typeabbrevtable =
 *translateClosedConstants:
 **********************************************************************)
 and translateClosedConstants clist kindtable typeabbrevtable =
-  let buildConstant = fun sym tyskel esize pos lib ->
+  let buildConstant = fun sym tyskel esize pos ext ->
     Absyn.Constant(sym, ref Absyn.NoFixity, ref (-1), ref false, ref false,
                    ref false, ref true, ref false, ref false, tyskel,
                    ref esize, ref (Some(Array.make esize true)), 
                    ref (Some(Array.make esize true)),
-                   ref None, ref Absyn.GlobalConstant, ref 0, lib, pos)
+                   ref None, ref Absyn.GlobalConstant, ref 0, ext, pos)
   in
   translateConstants clist kindtable typeabbrevtable buildConstant
 
@@ -563,39 +563,48 @@ and translateConstants clist kindtable typeabbrevtable buildconstant =
 * We can have several resulting constants since a single preabsyn constant
 * may carry several symbols (as in the declaration: type p, q o.)
 **********************************************************************)
+(* DJ - c library names are stored as astringinfo and entered into module
+   string list *)
+and externInfoStrs : Absyn.astringinfo list ref = ref []
 and translateConstant c clist kindtable typeabbrevtable buildconstant =
   (********************************************************************
   *translate':
   * Enter all names into table.
   ********************************************************************)
-  let rec enter names tyskel esize clist lib =
+  let rec enter names tyskel esize clist clib =
     match names with
       Preabsyn.Symbol(name, _, p)::ns ->
-        let clist' = (buildconstant name tyskel esize p lib) :: clist in
-          (enter ns tyskel esize clist' lib)
+        let clist' = (buildconstant name tyskel esize p clib) :: clist in
+          (enter ns tyskel esize clist' clib)
     | [] -> clist
   in
+
+  (* DJ - convert string names to astringinfo, enter module string list *)
+  let translateConstantExtInfo c =
+    if not (Preabsyn.isExternConstant c) then None else
+      let (cfunname, clibname) = Preabsyn.getConstantExternInfo c in
+      let fnameData = Absyn.StringData(cfunname, ref None, ref None) in
+      let lnameData = Absyn.StringData(clibname, ref None, ref None) in
+      externInfoStrs := fnameData :: !externInfoStrs;
+      externInfoStrs := lnameData :: !externInfoStrs;
+      Some(fnameData, lnameData)
+  in
+
   
   match c with
-    | Preabsyn.Constant(names, Some t, _) ->
+    | Preabsyn.Constant(names, Some t, pextinfo, _) ->
       (* A regular constant declaration *)
       let TypeAndEnvironment(ty, size) = 
         translateConstantTypeSkeleton t kindtable typeabbrevtable in
       (* let ty = translateType' t kindtable typeabbrevtable in 
-        If necessary, translateType' was removed in commit 1067 *)
+         If necessary, translateType' was removed in commit 1067 *)
+        let aextinfo = translateConstantExtInfo c in
         (enter names (ref(Some(Absyn.Skeleton(ty, ref None, ref false))))
-                     size clist "")
-    | Preabsyn.Constant(names, None, _) ->
-        (* This just a closed/exportdef or useonly declaration *) 
-        (enter names (ref None) 0 clist "")
-    | Preabsyn.Extconst(names, Some t, lib, _) ->
-      (* DJ - a external constant *)
-      let TypeAndEnvironment(ty, size) = 
-        translateConstantTypeSkeleton t kindtable typeabbrevtable in
-      (* let ty = translateType' t kindtable typeabbrevtable in 
-        If necessary, translateType' was removed in commit 1067 *)
-        (enter names (ref(Some(Absyn.Skeleton(ty, ref None, ref false))))
-                     size clist lib)
+           size clist aextinfo)
+    | Preabsyn.Constant(names, None, pextinfo, _) ->
+        (* This just a closed/exportdef or useonly declaration *)
+       let aextinfo = translateConstantExtInfo c in
+       (enter names (ref None) 0 clist aextinfo)
 
 (********************************************************************
 *translateTypeAbbrevs:
@@ -1895,8 +1904,8 @@ and translateModule mod' ktable ctable atable =
           (List.fold_left (getSkeleton) skeletons localconstants) in
         let amod =
           Absyn.Module(name, imps, accums, ref ctable, ref ktable,
-                       atable, [], globalkinds, localkinds, globalconstants, 
-                       localconstants, ref [], skeletons, ref [], 
+                       atable, !externInfoStrs, globalkinds, localkinds, 
+                       globalconstants,localconstants, ref [], skeletons, ref [], 
                        ref(Absyn.ClauseBlocks([]))) in
           let _ = Errormsg.log Errormsg.none
             "Translate.translateModule: Translated module." in

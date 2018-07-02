@@ -1900,7 +1900,7 @@ and genAtomicGoal goal cl goalNum last chunk chunks insts startLoc =
 	    ((not (Absyn.isGlobalConstant pred)) || expdef) then
 	    if (Absyn.isAnonymousConstant pred) then
 	      let (instr, size) =
-		(Instr.Ins_execute(ref 0), Instr.getSize_execute)
+	        (Instr.Ins_execute(ref 0), Instr.getSize_execute)
 	      in
 	      addBackPatchExecute pred instr;
 	      ([instr], size, goalNum)
@@ -1913,13 +1913,29 @@ and genAtomicGoal goal cl goalNum last chunk chunks insts startLoc =
 	       goalNum)
 	    else
 	      if (expdef) then 
-		 ([Instr.Ins_fail], Instr.getSize_fail, goalNum)
+	        ([Instr.Ins_fail], Instr.getSize_fail, goalNum)
 	      else 
 		([Instr.Ins_execute_name(pred)], Instr.getSize_execute_name, 
 		 goalNum)
 	else (* not closed *)
-	   ([Instr.Ins_execute_name(pred)], Instr.getSize_execute_name,
-	   goalNum) 
+          (* DJ - code added below *)
+          if (Absyn.isExternConstant pred) then
+            let (cfunname, clibname) = Absyn.getConstantExternInfo pred in
+            let arity = Absyn.getArrowTypeArity(
+              Absyn.getSkeletonType(
+                Absyn.getConstantSkeletonValue pred))         
+            in
+            let (instr, size) = (Instr.Ins_extern(
+              Absyn.getStringInfoIndex cfunname,
+              Absyn.getStringInfoIndex clibname,           
+              arity), Instr.getSize_extern)
+            in
+            ([instr], size, goalNum)          
+          else
+            (* DJ - code added above *)
+	    ([Instr.Ins_execute_name(pred)], Instr.getSize_execute_name,
+	     goalNum)
+              
   in
 
   (* generate "call" code *)
@@ -1949,6 +1965,21 @@ and genAtomicGoal goal cl goalNum last chunk chunks insts startLoc =
 	    ([Instr.Ins_call_name(envsize, pred)], Instr.getSize_call_name, 
 	     myGoalNum)
     else (* not closed *)
+      (* DJ - code added below *)
+      if (Absyn.isExternConstant pred) then
+        let (cfunname, clibname) = Absyn.getConstantExternInfo pred in
+        let arity = Absyn.getArrowTypeArity(
+          Absyn.getSkeletonType(
+            Absyn.getConstantSkeletonValue pred))         
+        in
+        let (instr, size) = (Instr.Ins_call_extern(
+          Absyn.getStringInfoIndex cfunname,
+          Absyn.getStringInfoIndex clibname,           
+          arity), Instr.getSize_call_extern)
+        in
+        ([instr], size, myGoalNum)          
+      else
+      (* DJ - code added above *)
       ([Instr.Ins_call_name(envsize, pred)], Instr.getSize_call_name,
        myGoalNum)
   in

@@ -891,11 +891,13 @@ let rec processTopLevelClauses clauseTerms impmods clauseDefs anonymous =
 (** ********************************************************************** **)
 let processClauses amod clTerms newClTerms closeddefs = 
   match amod with
-    Absyn.Module(modname, modimps, modaccs, ctable, ktable, atable, _,
+    Absyn.Module(modname, modimps, modaccs, ctable, ktable, atable, externInfoStrs,
      gkinds, lkinds, gconsts, lconsts, hconsts, skels, hskels, _)
     ->
       let () = Errormsg.log Errormsg.none 
-                 "Procesclauses.processClauses: processing clauses..." in
+        "Procesclauses.processClauses: processing clauses..." in
+      (* DJ - module string starts with extern fun and lib names *)
+      let () = modStr := externInfoStrs in
       setClosedDefs closeddefs;
       (* process anonymous clauses (those introduced for deorification), and*)
       (* increment them into the module definition list.                    *)

@@ -258,6 +258,15 @@
    AM_preg += INSTR_SEGI1LX_LEN;                                 \
 }
 
+//DJ - code added below
+//INSTR_CAT_SSI1X
+#define INSACC_SSI1X(op1, op2, op3) {\
+   (op1) = *((INSTR_Str *)(AM_preg + INSTR_SSI1X_S1));	\
+   (op2) = *((INSTR_Str *)(AM_preg + INSTR_SSI1X_S2)); \
+   (op3) = *((INSTR_CodeLabel *)(AM_preg + INSTR_SSI1X_I1));    \
+   AM_preg += INSTR_SSI1X_LEN;                                 \
+}
+//DJ - code added above
 
 
 //specialized

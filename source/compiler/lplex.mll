@@ -146,6 +146,8 @@ rule initial = parse
 | "\\"          {INFIXLAMBDA}
 | "->"          {TYARROW}
 | "!"           {CUT}
+| "#lib"        {CLIB}
+| "extern"      {EXTERN}
 
 | "pi"          {PI}
 | "sigma"       {SIGMA}

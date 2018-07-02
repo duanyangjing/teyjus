@@ -108,9 +108,11 @@ type pclause = Clause of pterm
  * exportdef p.
  * Otherwise this is the type of the constant defined by the user or in the 
  * pervasives *)
-(* DJ - add second rule, the string field stores c lib name *)
-type pconstant = Constant of psymbol list * ptype option * pos
-               | Extconst of psymbol list * ptype option * string * pos
+(* DJ - add pexterninfo *)
+type pconstant = Constant of psymbol list * ptype option *
+    pexterninfo option * pos
+(* DJ - cfunname, clibname*)
+and pexterninfo = (string * string)
 
 (* Kinds 
 * There are different categories of kinds. They are already classified
@@ -207,3 +209,8 @@ val getClauseTerm : pclause -> pterm
 
 val string_of_term : pterm -> string
 val string_of_type : ptype -> string
+
+(* DJ - code added below *)
+val getConstantExternInfo : pconstant -> pexterninfo
+val isExternConstant : pconstant -> bool
+(* DJ - code added above *)  

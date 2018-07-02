@@ -935,7 +935,7 @@ static char* OC_mkConstVarText(char* constName, char* fixity, char* prec,
   strcat(def, ", ");
   strcat(def, index);          free(index);
   strcat(def, ", ");
-  strcat(def, "\"\""); // DJ - empty string means not external constants
+  strcat(def, "None"); // DJ - None means not external constants
   strcat(def, ", ");   // DJ
   strcat(def, pos);            free(pos);
   strcat(def, ")");
