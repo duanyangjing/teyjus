@@ -209,35 +209,16 @@ BI_BuiltinTabIndex BI_number;
 /*     (*BI_branchTab[index])(); */
 /* } */
 
-void BI_dispatch(int index)
+// Dj - entry point to external calls
+void extern_call(char *cfun, char *clib, int numargs)
 {
-    BI_number = (BI_BuiltinTabIndex)index;
-    // actual builtins
-    if (BI_number == BI_SOLVE || BI_number == BI_NOT || BI_number == BI_UNIFY) {
-	(*BI_branchTab[index])();
-	return;
-    }
-    
-    printf("In BI_dispatch function\n");
-    
-    char libPath[128] = "";
-    char funName[128] = "";
-    char libName[128] = "";
-    char *libDir = "";
-    
-    // compexp and evalexp
-    if (BI_number == BI_EVAL || BI_number <= BI_STR_GE) {
-	strcat(libName, "./lib/comp.so");
-    } else if (BI_number >= BI_IO_OPEN_IN && BI_number <= BI_IO_READTERM){
-	strcat(libName, "./lib/io.so");
-    } else {
-	strcat(libName, "./lib/os.so");
-    }
-    
-    // this will later become a dedicated library path
-    strcat(libPath, libDir);
-    strcat(libPath, libName);
-    strcat(funName, BI_nameTab[index]);
+    char libPath[128];
+    // assume this is a dedicated library path
+    strcpy(libPath,
+	   "/home/grad06/jingx061/Projects/teyjus-fork/teyjus/lib/");
+    strcat(libPath, clib);
+    // shared library extension
+    strcat(libPath, ".so");
 
     // Dynamically open the shared library 
     void *handle = dlopen(libPath, RTLD_LAZY);
@@ -250,7 +231,7 @@ void BI_dispatch(int index)
     //int (*funStub)(DF_TermPtr*, BI_BuiltinTabIndex);
     void (*funStub)();
     // Get a function pointer to wrapper function given by funName
-    funStub = dlsym(handle, funName);
+    funStub = dlsym(handle, cfun);
     char *error = dlerror();
     if (error) {
         fprintf(stderr, "%s\n", error);
@@ -263,9 +244,66 @@ void BI_dispatch(int index)
     /* DF_TermPtr args[2] = {lOp, rOp}; */
     /* int success = (*funStub)(args, BI_number); */
     (*funStub)();
+    
+}
 
-    /* if (success) AM_preg = AM_cpreg; */
-    /* else EM_THROW(EM_FAIL); */
+void BI_dispatch(int index)
+{
+    BI_number = (BI_BuiltinTabIndex)index;
+    // actual builtins
+    if (BI_number == BI_SOLVE || BI_number == BI_NOT || BI_number == BI_UNIFY) {
+	(*BI_branchTab[index])();
+	return;
+    }
+    
+    printf("In BI_dispatch function\n");
+ 
+    char funName[128] = "";
+    char libName[128] = "";
+    
+    // compexp and evalexp
+    if (BI_number == BI_EVAL || BI_number <= BI_STR_GE) {
+	strcat(libName, "comp");
+    } else if (BI_number >= BI_IO_OPEN_IN && BI_number <= BI_IO_READTERM){
+	strcat(libName, "io");
+    } else {
+	strcat(libName, "os");
+    }
+    strcat(funName, BI_nameTab[index]);
+    
+    extern_call(funName, libName, 0);
+    /* // this will later become a dedicated library path */
+    /* strcat(libPath, libDir); */
+    /* strcat(libPath, libName); */
+    /* strcat(funName, BI_nameTab[index]); */
+
+    /* // Dynamically open the shared library  */
+    /* void *handle = dlopen(libPath, RTLD_LAZY); */
+    /* if (!handle) { */
+    /* 	fprintf(stderr, "%s\n", dlerror()); */
+    /*     exit(1); */
+    /* } */
+
+    /* printf("opened shared library %s\n", libPath); */
+    /* //int (*funStub)(DF_TermPtr*, BI_BuiltinTabIndex); */
+    /* void (*funStub)(); */
+    /* // Get a function pointer to wrapper function given by funName */
+    /* funStub = dlsym(handle, funName); */
+    /* char *error = dlerror(); */
+    /* if (error) { */
+    /*     fprintf(stderr, "%s\n", error); */
+    /*     exit(1); */
+    /* } */
+
+    /* // Need to set up args array to pass to the wrapper */
+    /* /\* DF_TermPtr lOp = (DF_TermPtr)AM_reg(1); *\/ */
+    /* /\* DF_TermPtr rOp = (DF_TermPtr)AM_reg(2); *\/ */
+    /* /\* DF_TermPtr args[2] = {lOp, rOp}; *\/ */
+    /* /\* int success = (*funStub)(args, BI_number); *\/ */
+    /* (*funStub)(); */
+
+    /* /\* if (success) AM_preg = AM_cpreg; *\/ */
+    /* /\* else EM_THROW(EM_FAIL); *\/ */
 }
 /***************************######********************************************
  *                          Error Information

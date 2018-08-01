@@ -124,6 +124,7 @@ rule initial = parse
 | "import"      {IMPORT}
 | "accumulate"  {ACCUMULATE}
 | "accum_sig"   {ACCUMSIG}
+| "accum_extern"{ACCUMEXTERN}
 | "use_sig"     {USESIG}
 | "local"       {LOCAL}
 | "localkind"   {LOCALKIND}

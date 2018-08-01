@@ -240,7 +240,8 @@ and aimportedmodule =
   ImportedModule of (string * amodule)
 
 and aaccumulatedmodule =
-  AccumulatedModule of (string * amodule)
+    AccumulatedModule of (string * amodule)
+(*| AccumulatedCExtern of (string * amodule)*) (* DJ *)
 
 and aclauseinfo = 
     ClauseBlocks of aclausesblock list

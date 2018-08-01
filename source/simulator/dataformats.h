@@ -309,6 +309,7 @@ float DF_floatValue(DF_TermPtr);             // float value
 MCSTR_Str DF_strValue(DF_TermPtr);           // string value
 DF_StrDataPtr DF_strData(DF_TermPtr tmPtr);  // string data field
 MCSTR_Str DF_strDataValue(DF_StrDataPtr tmPtr);  //acc str value from data fd
+char *DF_strDataToCString(DF_StrDataPtr tmPtr); // DJ - to C string 
 //stream
 WordPtr DF_streamTabIndex(DF_TermPtr);       // stream table index 
 //de Bruijn indices

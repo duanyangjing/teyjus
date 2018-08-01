@@ -174,6 +174,7 @@ type pfixity = Fixity of psymbol list * pfixitykind * int * pos
  *
  *   Accumulated Modules: psymbol list
  *   Accumulated Signatures: psymbol list
+ *   Accumulated Extern C libs: psymbol list - DJ
  *   Used Signatures: psymbol list
  *   Imported Modules: psymbol list
  *
@@ -193,7 +194,7 @@ type pmodule =
   | Module of string * pconstant list * pconstant list * 
       pconstant list * pconstant list * pconstant list * pfixity list *
       pkind list * pkind list * ptypeabbrev list * pclause list * 
-      psymbol list * psymbol list * psymbol list * psymbol list
+      psymbol list * psymbol list * psymbol list * psymbol list * psymbol list
   | Signature of string * pconstant list * pconstant list *
       pconstant list * pkind list *
       ptypeabbrev list * pfixity list * psymbol list * psymbol list

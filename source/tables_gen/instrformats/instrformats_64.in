@@ -157,7 +157,7 @@ INSTR CATEGORY
           I1I1WPX_LEN 16; I1I1WPX_I11 1; I1I1WPX_I12  2
 
   SSI1X  [S S I1 X X X X X X X X X]
-         SSI1X_LEN 16; SSI1X_S1 1; SSI1X_S2 3; SSI1X_I1 5
+         SSI1X_LEN 20; SSI1X_S1 1; SSI1X_S2 9; SSI1X_I1 17
 
   CALL_I1_LEN 15
 
@@ -336,7 +336,7 @@ INSTRUCTIONS 147
    136       call_builtin               I1I1WPX      I1I1WPX_LEN;
    137       builtin                    I1X          I1X_LEN;
    138       call_extern                SSI1X        SSI1X_LEN;
-   139       extern                     SSI1X        SSI1X_LEN;
+   139       execute_extern             SSI1X        SSI1X_LEN;
    140       stop                       X            X_LEN;
    141       halt                       X            X_LEN;
    142       fail                       X            X_LEN;

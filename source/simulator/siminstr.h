@@ -235,6 +235,8 @@ void SINSTR_cut();
 /*****************************************************************************/
 void SINSTR_call_builtin();
 void SINSTR_builtin();
+void SINSTR_call_extern();
+void SINSTR_execute_extern();
 void SINSTR_stop();
 void SINSTR_halt();
 void SINSTR_fail();

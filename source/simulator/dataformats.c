@@ -431,6 +431,11 @@ MCSTR_Str DF_strDataValue(DF_StrDataPtr tmPtr)     //acc str value from data fd
     return (MCSTR_Str)(((MemPtr)tmPtr) + DF_STRDATA_HEAD_SIZE);
 }
 
+char *DF_strDataToCString(DF_StrDataPtr tmPtr)
+{
+    return MCSTR_toCString(DF_strDataValue(tmPtr));
+}
+
 //stream TEMP
 WordPtr DF_streamTabIndex(DF_TermPtr tmPtr)        //stream table index
 {

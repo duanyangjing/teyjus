@@ -1892,6 +1892,26 @@ and genAtomicGoal goal cl goalNum last chunk chunks insts startLoc =
 	else genPervCode chunk pred envSize		            
   in
 
+  (* DJ - generate (instr, size) for extern call/execute *)
+  let genExtern pred callOrExec =
+    let (cfunname, clibname) = Absyn.getConstantExternInfo pred in
+    let arity = Absyn.getArrowTypeArity(
+      Absyn.getSkeletonType(
+        Absyn.getConstantSkeletonValue pred))
+    in
+    if callOrExec then
+      (Instr.Ins_call_extern(
+        Absyn.getStringInfoIndex cfunname,
+        Absyn.getStringInfoIndex clibname,
+        arity), Instr.getSize_call_extern)
+    else
+      (Instr.Ins_execute_extern(
+        Absyn.getStringInfoIndex cfunname,
+        Absyn.getStringInfoIndex clibname,
+        arity), Instr.getSize_execute_extern)
+  in
+  
+              
   (* generate "execute" code *)
   let genExecute pred = 
 	if (Absyn.getConstantClosed pred) then
@@ -1900,7 +1920,10 @@ and genAtomicGoal goal cl goalNum last chunk chunks insts startLoc =
 	    ((not (Absyn.isGlobalConstant pred)) || expdef) then
 	    if (Absyn.isAnonymousConstant pred) then
 	      let (instr, size) =
-	        (Instr.Ins_execute(ref 0), Instr.getSize_execute)
+                (* DJ - code added below *)
+                if (Absyn.isExternConstant pred) then genExtern pred false
+                (* DJ - code added above *)
+	        else (Instr.Ins_execute(ref 0), Instr.getSize_execute)
 	      in
 	      addBackPatchExecute pred instr;
 	      ([instr], size, goalNum)
@@ -1914,23 +1937,22 @@ and genAtomicGoal goal cl goalNum last chunk chunks insts startLoc =
 	    else
 	      if (expdef) then 
 	        ([Instr.Ins_fail], Instr.getSize_fail, goalNum)
-	      else 
-		([Instr.Ins_execute_name(pred)], Instr.getSize_execute_name, 
-		 goalNum)
+	      else
+                (* DJ - code added below *)
+                if (Absyn.isExternConstant pred) then              
+                  let (instr, size) = genExtern pred false
+                  in
+                  ([instr], size, goalNum)
+                  (* DJ - code added above *)
+                else
+		  ([Instr.Ins_execute_name(pred)], Instr.getSize_execute_name,
+		   goalNum)
 	else (* not closed *)
           (* DJ - code added below *)
           if (Absyn.isExternConstant pred) then
-            let (cfunname, clibname) = Absyn.getConstantExternInfo pred in
-            let arity = Absyn.getArrowTypeArity(
-              Absyn.getSkeletonType(
-                Absyn.getConstantSkeletonValue pred))         
+            let (instr, size) = genExtern pred false
             in
-            let (instr, size) = (Instr.Ins_extern(
-              Absyn.getStringInfoIndex cfunname,
-              Absyn.getStringInfoIndex clibname,           
-              arity), Instr.getSize_extern)
-            in
-            ([instr], size, goalNum)          
+            ([instr], size, goalNum)
           else
             (* DJ - code added above *)
 	    ([Instr.Ins_execute_name(pred)], Instr.getSize_execute_name,
@@ -1946,8 +1968,9 @@ and genAtomicGoal goal cl goalNum last chunk chunks insts startLoc =
       if (Absyn.constantHasCode pred) && 
 	((not (Absyn.isGlobalConstant pred)) || expdef) then
 	if (Absyn.isAnonymousConstant pred) then
-	  let (instr, size) = 
-	    (Instr.Ins_call(envsize, ref 0), Instr.getSize_call)
+	  let (instr, size) =
+            if (Absyn.isExternConstant pred) then genExtern pred true
+	    else (Instr.Ins_call(envsize, ref 0), Instr.getSize_call)
 	  in
 	  addBackPatchCall pred instr;
 	  ([instr], size, myGoalNum)
@@ -1961,23 +1984,20 @@ and genAtomicGoal goal cl goalNum last chunk chunks insts startLoc =
 	else
 	  if (expdef) then 
 	    ([Instr.Ins_fail], Instr.getSize_fail, myGoalNum)
-	  else 
-	    ([Instr.Ins_call_name(envsize, pred)], Instr.getSize_call_name, 
-	     myGoalNum)
+	  else
+            if (Absyn.isExternConstant pred) then
+              let (instr, size) = genExtern pred true
+              in
+              ([instr], size, myGoalNum)
+            else
+	      ([Instr.Ins_call_name(envsize, pred)], Instr.getSize_call_name,
+	       myGoalNum)
     else (* not closed *)
       (* DJ - code added below *)
       if (Absyn.isExternConstant pred) then
-        let (cfunname, clibname) = Absyn.getConstantExternInfo pred in
-        let arity = Absyn.getArrowTypeArity(
-          Absyn.getSkeletonType(
-            Absyn.getConstantSkeletonValue pred))         
+        let (instr, size) = genExtern pred true
         in
-        let (instr, size) = (Instr.Ins_call_extern(
-          Absyn.getStringInfoIndex cfunname,
-          Absyn.getStringInfoIndex clibname,           
-          arity), Instr.getSize_call_extern)
-        in
-        ([instr], size, myGoalNum)          
+        ([instr], size, myGoalNum)
       else
       (* DJ - code added above *)
       ([Instr.Ins_call_name(envsize, pred)], Instr.getSize_call_name,

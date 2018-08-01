@@ -1807,7 +1807,7 @@ and translateModule mod' ktable ctable atable =
     Preabsyn.Module(name, gconsts, lconsts, cconsts, uconsts, 
                     econsts, fixities,
                     gkinds, lkinds, tabbrevs, clauses, accummods,
-                    accumsigs, usesigs, impmods) ->
+                    accumsigs, accumexts, usesigs, impmods) ->
       (*  Translate the accumulated signatures  *)
       let accumsigs' = processSignatures accumsigs in
       let (_, accsigstables) = translateAccumSigs accumsigs' in

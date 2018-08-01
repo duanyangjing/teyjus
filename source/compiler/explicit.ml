@@ -369,7 +369,7 @@ let explicit_const_ty const =
     match const with
       | Constant(sym, fix, prec, expdef, use, nodefs, closed, typ_pres, red,
                  skelref, typ_size, skel_need, need, code_info, const_ty, index,
-                 pos) ->
+                 ext_info, pos) ->
           let skelopt = !skelref in 
             match skelopt with
               | None -> const 
@@ -381,7 +381,7 @@ let explicit_const_ty const =
                         Constant(sym, fix, prec, expdef, use, nodefs, closed, 
                                  typ_pres, red, ref (Some(skel_exp)), typ_size, 
                                  skel_need, need, code_info, const_ty, index, 
-                                 pos) 
+                                 ext_info, pos)
                     else
                       const
 

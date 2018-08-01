@@ -38,6 +38,7 @@
 *   interpretation. In terms of shift/reduce conflicts, this coincides with
 *   the grammar's choice to shift rather than reduce after reading "A : B".
 ****************************************************************************)
+(* DJ - search accumulatedExtList for added code *)
 open Lexing
 open Preabsyn
 
@@ -57,6 +58,7 @@ let maxPrecedence = 255
 let importedModList = ref []
 let accumulatedModList = ref []
 let accumulatedSigList = ref []
+let accumulatedExtList = ref []
 let useSigList = ref []
 let useOnlyList = ref []
 let exportList = ref []
@@ -79,6 +81,7 @@ let reverseResults () =
   importedModList := List.rev !importedModList;
   accumulatedModList := List.rev !accumulatedModList;
   accumulatedSigList := List.rev !accumulatedSigList;
+  accumulatedExtList := List.rev !accumulatedExtList;
   useSigList := List.rev !useSigList;
   clauseList := List.rev !clauseList;
 
@@ -99,6 +102,7 @@ let clearResults () =
   importedModList := [];
   accumulatedModList := [];
   accumulatedSigList := [];
+  accumulatedExtList := [];
   useSigList := [];
   useOnlyList := [];
   exportList := [];
@@ -149,6 +153,7 @@ let makeModule () =
                  !closedConstants, !useOnlyList, !exportList, !fixityList,
                  !globalKinds, !localKinds, !globalTypeAbbrevs,
                  !clauseList, !accumulatedModList, !accumulatedSigList,
+                 !accumulatedExtList,
                  !useSigList, !importedModList) in
     clearResults () ;
     m
@@ -172,7 +177,7 @@ let errorEof pos msg =
 %}
 
 
-%token MODULE END IMPORT ACCUMULATE ACCUMSIG USESIG LOCAL CLIB
+%token MODULE END IMPORT ACCUMULATE ACCUMSIG ACCUMEXTERN USESIG LOCAL CLIB
 %token LOCALKIND CLOSED SIG KIND TYPE TYPEABBREV EXPORTDEF EXTERN
 %token USEONLY INFIXL INFIX INFIXR PREFIX PREFIXR
 %token POSTFIX POSTFIXL COLONDASH
@@ -267,6 +272,9 @@ modpreamble:
 
   | modpreamble USESIG cvidlist PERIOD
       { useSigList := $3 @ !useSigList }
+
+  | modpreamble ACCUMEXTERN cvidlist PERIOD
+      { accumulatedSigList := $3 @ !accumulatedSigList }
 
 sigpreamble:
   |                           {  }
