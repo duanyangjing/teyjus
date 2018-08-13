@@ -1894,7 +1894,7 @@ and genAtomicGoal goal cl goalNum last chunk chunks insts startLoc =
 
   (* DJ - generate (instr, size) for extern call/execute *)
   let genExtern pred callOrExec =
-    let (cfunname, clibname) = Absyn.getConstantExternInfo pred in
+    let (cfunname, clibname, _) = Absyn.getConstantExternInfo pred in
     let arity = Absyn.getArrowTypeArity(
       Absyn.getSkeletonType(
         Absyn.getConstantSkeletonValue pred))

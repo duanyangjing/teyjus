@@ -56,7 +56,7 @@ type pclause = Clause of pterm
 type pconstant = Constant of psymbol list * ptype option *
     pexterninfo option * pos
 
-and pexterninfo = (string * string)
+and pexterninfo = (string * string * bool)
 
 type pkind = Kind of psymbol list * int option * pos
 
@@ -269,4 +269,19 @@ let isExternConstant = function
         
 let getConstantExternInfo = function
   | Constant(_,_,e,_) -> Option.get e
+
+let getConstantExtLibName = function
+  | Constant(_,_,e,_) ->
+    match Option.get e with
+      (funName, libName, regcl) -> libName
+
+let getConstantExtFunName = function
+  | Constant(_,_,e,_) ->
+    match Option.get e with
+      (funName, libName, regcl) -> funName
+
+let isRegCLExternConstant = function
+  | Constant(_,_,e,_) ->
+    match Option.get e with
+      (funName, libName, regcl) -> regcl
 (*DJ - code added above *)

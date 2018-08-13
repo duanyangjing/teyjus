@@ -31,7 +31,7 @@
 // DJ: Looks like only these two helper functions are needed from io.c
 
 /* get string from an lpwam string term pointer */
-static char* BIIO_getStringFromTerm(DF_TermPtr tmPtr)
+static char* getStringFromTerm(DF_TermPtr tmPtr)
 {
     HN_hnorm(tmPtr);
     tmPtr = DF_termDeref(tmPtr);
@@ -41,7 +41,7 @@ static char* BIIO_getStringFromTerm(DF_TermPtr tmPtr)
 
 /* Given an lpwam VAR term pointer, and an integer value,
    bind the variable term to the given integer. */
-static void BIIO_bindVarToInt(DF_TermPtr varPtr, int integer)
+static void bindVarToInt(DF_TermPtr varPtr, int integer)
 {
     HN_hnorm(varPtr);
     varPtr = DF_termDeref(varPtr);
@@ -56,7 +56,7 @@ static void BIIO_bindVarToInt(DF_TermPtr varPtr, int integer)
    Calls the Unix getenv function to unify Value with the value of
    the environment variable given in Name. Name must be instantiated.
  */
-void BIIO_getEnv()
+void getEnv()
 {
   //NOTE: os dependent; need to add code for other os besides UNIX.
   char     *str, *envstr;
@@ -65,7 +65,7 @@ void BIIO_getEnv()
   MemPtr   strData     = strDataHead + DF_STRDATA_HEAD_SIZE;
   MemPtr   nhreg;
 
-  str = BIIO_getStringFromTerm((DF_TermPtr)AM_reg(1));
+  str = getStringFromTerm((DF_TermPtr)AM_reg(1));
   if (!str) EM_error(BI_ERROR_UNBOUND_VARIABLE, "string");
 
   envstr = getenv(str);
@@ -89,20 +89,20 @@ void BIIO_getEnv()
 /* type  system  string -> int -> o
    system Command ReturnCode.
 */
-void BIIO_system()
+void sys()
 {
   char * command = NULL;
   int result = -1;
 
   //Grab the command; it must be bound.
-  command = BIIO_getStringFromTerm((DF_TermPtr)AM_reg(1));
+  command = getStringFromTerm((DF_TermPtr)AM_reg(1));
   if (!command) EM_error(BI_ERROR_UNBOUND_VARIABLE, "string");
 
   //Execute
   result = system(command);
 
   //Store result.
-  BIIO_bindVarToInt((DF_TermPtr)AM_reg(2), result);
+  bindVarToInt((DF_TermPtr)AM_reg(2), result);
 
   AM_preg = AM_cpreg;
   return;
@@ -116,7 +116,7 @@ void BIIO_system()
    January 1, 1970. The arguments are expected to be uninstantiated
    variables
 */
-void BIIO_unixTime()
+void unixTime()
 {
   //to be filled in
   EM_error(BI_ERROR_NOT_IMPLEMENTED);

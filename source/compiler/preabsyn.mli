@@ -111,8 +111,8 @@ type pclause = Clause of pterm
 (* DJ - add pexterninfo *)
 type pconstant = Constant of psymbol list * ptype option *
     pexterninfo option * pos
-(* DJ - cfunname, clibname*)
-and pexterninfo = (string * string)
+(* DJ - cfunname, clibname, regcl*)
+and pexterninfo = (string * string * bool)
 
 (* Kinds 
 * There are different categories of kinds. They are already classified
@@ -213,5 +213,8 @@ val string_of_type : ptype -> string
 
 (* DJ - code added below *)
 val getConstantExternInfo : pconstant -> pexterninfo
+val getConstantExtFunName: pconstant -> string
+val getConstantExtLibName: pconstant -> string
 val isExternConstant : pconstant -> bool
+val isRegCLExternConstant: pconstant -> bool
 (* DJ - code added above *)  

@@ -582,12 +582,12 @@ and translateConstant c clist kindtable typeabbrevtable buildconstant =
   (* DJ - convert string names to astringinfo, enter module string list *)
   let translateConstantExtInfo c =
     if not (Preabsyn.isExternConstant c) then None else
-      let (cfunname, clibname) = Preabsyn.getConstantExternInfo c in
+      let (cfunname, clibname, regcl) = Preabsyn.getConstantExternInfo c in
       let fnameData = Absyn.StringData(cfunname, ref None, ref None) in
       let lnameData = Absyn.StringData(clibname, ref None, ref None) in
       externInfoStrs := fnameData :: !externInfoStrs;
       externInfoStrs := lnameData :: !externInfoStrs;
-      Some(fnameData, lnameData)
+      Some(fnameData, lnameData, regcl)
   in
 
   

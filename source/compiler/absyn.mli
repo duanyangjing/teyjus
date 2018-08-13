@@ -180,8 +180,8 @@ and acodeinfo =
     Builtin of int
   | Clauses of aclausesblock
 
-(* DJ - (cfunname, clibname) *)
-and aexterninfo = (astringinfo * astringinfo)
+(* DJ - (cfunname, clibname, regcl) *)
+and aexterninfo = (astringinfo * astringinfo * bool)
   
 (*****************************************************************************
 *Variables (name based):
@@ -498,7 +498,10 @@ val string_of_constant: aconstant -> string
 
 (* DJ - access libname field*)  
 val getConstantExternInfo: aconstant -> aexterninfo
+val getConstantExtLibNameStrInfo: aconstant -> astringinfo
+val getConstantExtFunNameStrInfo: aconstant -> astringinfo
 val isExternConstant: aconstant -> bool
+val isRegCLExternConstant: aconstant -> bool
 (*************************************************************************)
 (*  atypesymbol:                                                         *)
 (*************************************************************************)

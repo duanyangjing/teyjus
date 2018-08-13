@@ -431,10 +431,11 @@ let chunkify goal =
 	in
 	match goal with
       Absyn.AtomicGoal(pred, _, _, _, _) ->
-		if ((Pervasive.isPerv pred) && (not (Pervasive.regClobberingPerv pred))
-			  && (not (Pervasive.backtrackablePerv pred)))
+		if (((Pervasive.isPerv pred) && (not (Pervasive.regClobberingPerv pred))
+		     && (not (Pervasive.backtrackablePerv pred)))
+                    || (not (Absyn.isRegCLExternConstant pred)))
 		then (addToLastChunk chunks goal)
-		else (chunks @ [[goal]])
+                else (chunks @ [[goal]])
 	| Absyn.AndGoal(lgoal, rgoal) ->
 		let newChunks = chunkifyAux lgoal chunks in
 		chunkifyAux rgoal newChunks

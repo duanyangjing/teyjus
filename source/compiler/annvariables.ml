@@ -679,6 +679,7 @@ and processAtomicGoal pred args tyargs perm last cutVarRef =
   let hasenvAndNotrim () =
 	let notrim = 
 	  if (not(Pervasive.isPerv(pred)) || Pervasive.regClobberingPerv(pred) ||
+              Absyn.isRegCLExternConstant(pred) ||
 	      Pervasive.backtrackablePerv(pred)) 
 	  then
 		let myisPervGoal = isPervGoal () in

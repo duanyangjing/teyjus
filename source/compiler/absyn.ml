@@ -105,8 +105,8 @@ and acodeinfo =
     Builtin of int
   | Clauses of aclausesblock
 
-(* DJ - (cfunname, clibname) *)
-and aexterninfo = (astringinfo * astringinfo)
+(* DJ - (cfunname, clibname, regcl) *)
+and aexterninfo = (astringinfo * astringinfo * bool)
   
 (*****************************************************************************
 *Variables (name based):
@@ -1676,9 +1676,27 @@ let getConstantExternInfo = function
   Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,e,_) ->
     Option.get e
       
+let getConstantExtLibNameStrInfo = function
+  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,e,_) ->
+    match Option.get e with
+      (funName, libName, regcl) -> libName
+
+let getConstantExtFunNameStrInfo = function
+  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,e,_) ->
+    match Option.get e with
+      (funName, libName, regcl) -> funName
+      
 let isExternConstant = function
   Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,e,_) ->
     Option.isSome e
+
+let isRegCLExternConstant = function
+  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,e,_) ->
+    if not (Option.isSome e) then false else
+      match Option.get e with
+        (funName, libName, regcl) -> regcl
+          
+      
 (* DJ - code added above *)
   
 (*************************************************************************)

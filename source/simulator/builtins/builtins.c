@@ -228,6 +228,7 @@ void extern_call(char *cfun, char *clib, int numargs)
     }
 
     printf("opened shared library %s\n", libPath);
+    dlerror();
     //int (*funStub)(DF_TermPtr*, BI_BuiltinTabIndex);
     void (*funStub)();
     // Get a function pointer to wrapper function given by funName

@@ -38,7 +38,6 @@
 *   interpretation. In terms of shift/reduce conflicts, this coincides with
 *   the grammar's choice to shift rather than reduce after reading "A : B".
 ****************************************************************************)
-(* DJ - search accumulatedExtList for added code *)
 open Lexing
 open Preabsyn
 
@@ -59,6 +58,7 @@ let importedModList = ref []
 let accumulatedModList = ref []
 let accumulatedSigList = ref []
 let accumulatedExtList = ref []
+let extRegCLList = ref []
 let useSigList = ref []
 let useOnlyList = ref []
 let exportList = ref []
@@ -82,6 +82,7 @@ let reverseResults () =
   accumulatedModList := List.rev !accumulatedModList;
   accumulatedSigList := List.rev !accumulatedSigList;
   accumulatedExtList := List.rev !accumulatedExtList;
+  extRegCLList := List.rev !extRegCLList;
   useSigList := List.rev !useSigList;
   clauseList := List.rev !clauseList;
 
@@ -103,6 +104,7 @@ let clearResults () =
   accumulatedModList := [];
   accumulatedSigList := [];
   accumulatedExtList := [];
+  extRegCLList := [];
   useSigList := [];
   useOnlyList := [];
   exportList := [];
@@ -166,6 +168,9 @@ let makeSignature () =
     clearResults ();
     s
 
+let sameName id psym = match psym with
+    Preabsyn.Symbol(sym, pidkind, pos) -> Symbol.name sym = getIDName id
+  
 (********************************************************************
 *errorEof:
 * Prints an error occuring before the end of the file, 
@@ -177,7 +182,7 @@ let errorEof pos msg =
 %}
 
 
-%token MODULE END IMPORT ACCUMULATE ACCUMSIG ACCUMEXTERN USESIG LOCAL CLIB
+%token MODULE END IMPORT ACCUMULATE ACCUMSIG ACCUMEXTERN USESIG LOCAL CLIB REGCL
 %token LOCALKIND CLOSED SIG KIND TYPE TYPEABBREV EXPORTDEF EXTERN
 %token USEONLY INFIXL INFIX INFIXR PREFIX PREFIXR
 %token POSTFIX POSTFIXL COLONDASH
@@ -288,6 +293,9 @@ sigpreamble:
   | sigpreamble CLIB ID PERIOD
       { clibname := getIDName $3}
 
+  | sigpreamble REGCL idlist PERIOD
+      { extRegCLList := $3 @ !extRegCLList}
+
 cvidlist:
   | tok                       { (makeSymbol $1) :: [] }
   | cvidlist COMMA ID         { (makeSymbol $3) :: $1 }
@@ -328,15 +336,18 @@ signdeclaux:
 
   | EXTERN TYPE ID ID type
       { globalConstants :=
-          Constant([makeSymbol $3], Some $5, Some(getIDName $4, !clibname), getPos 1) ::
-            !globalConstants }
+          Constant([makeSymbol $3], Some $5,
+                   Some(getIDName $4, !clibname,
+                        List.exists (sameName $3) !extRegCLList),
+                   getPos 1) ::
+          !globalConstants }
                         
   | TYPEABBREV LPAREN tok arglist RPAREN type
       { globalTypeAbbrevs :=
           TypeAbbrev(makeSymbol $3, (List.map makeSymbol $4), $6, getPos 1) ::
             !globalTypeAbbrevs }
 
- | TYPEABBREV LPAREN tok RPAREN type
+  | TYPEABBREV LPAREN tok RPAREN type
       { globalTypeAbbrevs :=
           TypeAbbrev(makeSymbol $3, [], $5, getPos 1) :: !globalTypeAbbrevs }
 
