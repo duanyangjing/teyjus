@@ -100,6 +100,7 @@ void InitAll()
   InitTLConsts();
   InitTHConsts();
   LK_STRINGS_Init();
+  LK_EXTFUNS_Init();
   InitTImplGoals();
   InitTHashTabs();
   InitTBvrTabs();
@@ -131,6 +132,7 @@ void LoadTopModule(char* modname)
     LoadHConsts(fd,CMData);
     
     LK_STRINGS_Load(fd,CMData);
+    LK_EXTFUNS_Load(fd,CMData);
     LoadImplGoals(fd,CMData);
     
     LoadHashTabs(fd,CMData);
@@ -172,6 +174,7 @@ void LoadAccModule(char* modname)
     LoadHConsts(fd,CMData);
     
     LK_STRINGS_Load(fd,CMData);
+    LK_EXTFUNS_Load(fd,CMData);
     LoadImplGoals(fd,CMData);
     
     LoadHashTabs(fd,CMData);
@@ -214,6 +217,7 @@ void LoadImpModule(char* modname)
     LoadHConsts(fd,CMData);
     
     LK_STRINGS_Load(fd,CMData);
+    LK_EXTFUNS_Load(fd,CMData);
     LoadImplGoals(fd,CMData);
     
     LoadHashTabs(fd,CMData);
@@ -284,6 +288,7 @@ void WriteAll(char* modname)
   WriteTySkels(fd);
   WriteConsts(fd);
   LK_STRINGS_Write(fd);
+  LK_EXTFUNS_Write(fd);
   WriteImplGoals(fd);
   WriteHashTabs(fd);
   WriteBvrTabs(fd);
@@ -423,5 +428,12 @@ StringInd GetStringInd(int fd, struct Module_st* CMData)
 {
   TwoBytes x=LK_FILE_GET2(fd);
   LK_ADJUST(x,CMData->StringsAdj,"String");
+  return x;
+}
+
+ExtfunInd GetExtfunInd(int fd, struct Module_st* CMData)
+{
+  TwoBytes x=LK_FILE_GET2(fd);
+  LK_ADJUST(x,CMData->ExtfunsAdj,"External Function Table");
   return x;
 }

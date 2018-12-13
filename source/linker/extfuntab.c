@@ -17,57 +17,52 @@
 // You should have received a copy of the GNU General Public License        //
 // along with Teyjus.  If not, see <http://www.gnu.org/licenses/>.          //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef _DATATYPES_H_
-#define _DATATYPES_H_
+#include "stringspace.h"
+#include "module.h"
+#include "vector.h"
+#include "file.h"
+#include "VectorRW.h"
+#include "linker_message.h"
+#include "../include/standardlib.h"
 
-#include <sys/types.h>
-#include "../simulator/mctypes.h"
-#include "../system/error.h"
+typedef struct {
+  char* funname;
+  char* libname;
+} extfun_t;
 
-//#define Byte u_int8_t
-//#define TwoBytes u_int16_t
-#define INT4 u_int32_t
-//#define Word int
+struct Vector extfuns;
 
-#define GLOBAL 0
-#define LOCAL 1
-#define HIDDEN 2
-#define PERVASIVE 3
+void LK_EXTFUNS_Init()
+{
+  LK_VECTOR_Init(&extfuns, 10, sizeof(extfun_t));
+}
 
-//TySkel symbols
-#define ARROW 0
-#define KIND 1
-#define VARIABLE 2
+void LoadExtfun(int fd, struct Module_st* CMData, void* entry)
+{
+  extfun_t* ef = (extfun_t*)entry;
+  char* funname = LK_FILE_GetString(fd);
+  char* libname = LK_FILE_GetString(fd);
+  ef->funname = funname;
+  ef->libname = libname;
+}
 
-#define DEBUG(x) printf("%s\n",x)
-#define DEBUGNUM(x) printf("-%d-\n",x)
+void LK_EXTFUNS_Load(int fd, struct Module_st* CMData)
+{
+  LK_VECTOR_Read(fd, &extfuns, CMData, &(CMData->ExtfunsAdj), LoadExtfun);
+}
 
-typedef struct{
-  int size;
-  char* string;
-}Name;
+void WriteExtfun(int fd, void* entry)
+{
+  extfun_t* ef = (extfun_t*)entry;
+  LK_FILE_PutString(fd, ef->funname);
+  LK_FILE_PutString(fd, ef->libname);
+  free(ef->funname);
+  free(ef->libname);
+}
 
-#define Clear(name) free(name.string)
-
-typedef struct{
-  Byte gl_flag;
-  TwoBytes index;
-}MarkInd;
-
-typedef MarkInd ConstInd;
-typedef MarkInd KindInd;
-
-typedef TwoBytes TySkelInd;
-typedef TwoBytes HashTabInd;
-typedef TwoBytes StringInd;
-typedef TwoBytes ExtfunInd;
-typedef TwoBytes BvrTabInd;
-typedef TwoBytes ImplGoalInd;
-typedef long CodeInd;
-typedef int ImportTabInd;
-
-typedef enum {
-  LK_LinkError=LINKER_FIRST_ERR_INDEX
-}LK_ExnType;
-
-#endif //_DATATYPES_H_
+void LK_EXTFUNS_Write(int fd)
+{
+  debug("Writing String Tables at %lx\n",lseek(fd,0,SEEK_CUR));
+  LK_VECTOR_Write(fd, &extfuns, WriteExtfun);
+  LK_VECTOR_Free(&extfuns);
+}

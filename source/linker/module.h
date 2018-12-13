@@ -56,8 +56,10 @@ struct Module_st{
   Adjust_t HashTabAdj;
 	
   Adjust_t BvrTabAdj;
-	
+    
   Adjust_t StringsAdj;
+
+  Adjust_t ExtfunsAdj;
 
   int CodeOffset;
   int CodeSize;
@@ -89,6 +91,7 @@ extern ImplGoalInd GetImplGoalInd(int fd, struct Module_st* CMData);
 extern HashTabInd GetHashTabInd(int fd, struct Module_st* CMData);
 extern BvrTabInd GetBvrTabInd(int fd, struct Module_st* CMData);
 extern StringInd GetStringInd(int fd, struct Module_st* CMData);
+extern ExtfunInd GetExtfunInd(int fd, struct Module_st* CMData);
 extern CodeInd GetCodeInd(int fd, struct Module_st* CMData);
 extern ImportTabInd GetImportTabInd(int fd, struct Module_st* CMData);
 
@@ -99,6 +102,7 @@ extern void PutKindInd(int fd, KindInd x);
 #define PutHashTabInd(fd,x) LK_FILE_PUT2(fd,(TwoBytes)x)
 #define PutBvrTabInd(fd,x) LK_FILE_PUT2(fd,(TwoBytes)x)
 #define PutStringInd(fd,x) LK_FILE_PUT2(fd,(TwoBytes)x)
+#define PutExtfunInd(fd,x) LK_FILE_PUT2(fd,(TwoBytes)x)
 #define PutCodeInd(fd,x) LK_FILE_PUTWord(fd,(Word)x)
 #define PutImportTabInd(fd,x) LK_FILE_PUT2(fd,(TwoBytes)x)
 

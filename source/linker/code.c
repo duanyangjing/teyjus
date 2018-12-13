@@ -324,7 +324,13 @@ void LoadCode(int fd, struct Module_st* CMData)
           debug("S:%d\t",*(StringInd*)(code+j));
           j+=sizeof(StringInd);
           break;
-        
+
+	case INSTR_ET:
+          *(ExtfunInd*)(code+j)=GetExtfunInd(fd,CMData);
+          debug("S:%d\t",*(ExtfunInd*)(code+j));
+          j+=sizeof(ExtfunInd);
+          break;
+	  
         case INSTR_L:
           *(CodeInd*)(code+j)=GetCodeInd(fd,CMData);
           debug("L:%d\t",*(CodeInd*)(code+j));
@@ -460,6 +466,11 @@ void WriteCode(int fd)
         case INSTR_S:
           PutStringInd(fd,*(StringInd*)(code+j));
           j+=sizeof(StringInd);
+          break;
+
+	case INSTR_ET:
+          PutExtfunInd(fd,*(ExtfunInd*)(code+j));
+          j+=sizeof(ExtfunInd);
           break;
         
         case INSTR_L:

@@ -53,7 +53,7 @@ let topModule =
 				ref Pervasive.pervasiveKinds, 
 				Pervasive.pervasiveTypeAbbrevs,
 				[], [], [], [], [], ref [], [], ref [], 
-				ref (Absyn.ClauseBlocks []))) 
+				ref (Absyn.ClauseBlocks []), [])) 
 (* error module *)
 let errorModule = ModuleTableEntry("%empty", Absyn.ErrorModule)
 
