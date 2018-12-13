@@ -1620,7 +1620,7 @@ let unitTests () =
                            ref (Pervasive.pervasiveConstants), 
                            ref (Pervasive.pervasiveKinds), 
                            Table.empty, [], [], [], [], [], ref [], [], ref [],
-                           ref (Absyn.ClauseBlocks([])))
+                           ref (Absyn.ClauseBlocks([])), [])
   in
 
   let test t =

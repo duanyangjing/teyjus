@@ -57,7 +57,6 @@ let maxPrecedence = 255
 let importedModList = ref []
 let accumulatedModList = ref []
 let accumulatedSigList = ref []
-let accumulatedExtList = ref []
 let extRegCLList = ref []
 let useSigList = ref []
 let useOnlyList = ref []
@@ -81,7 +80,6 @@ let reverseResults () =
   importedModList := List.rev !importedModList;
   accumulatedModList := List.rev !accumulatedModList;
   accumulatedSigList := List.rev !accumulatedSigList;
-  accumulatedExtList := List.rev !accumulatedExtList;
   extRegCLList := List.rev !extRegCLList;
   useSigList := List.rev !useSigList;
   clauseList := List.rev !clauseList;
@@ -103,7 +101,6 @@ let clearResults () =
   importedModList := [];
   accumulatedModList := [];
   accumulatedSigList := [];
-  accumulatedExtList := [];
   extRegCLList := [];
   useSigList := [];
   useOnlyList := [];
@@ -155,7 +152,6 @@ let makeModule () =
                  !closedConstants, !useOnlyList, !exportList, !fixityList,
                  !globalKinds, !localKinds, !globalTypeAbbrevs,
                  !clauseList, !accumulatedModList, !accumulatedSigList,
-                 !accumulatedExtList,
                  !useSigList, !importedModList) in
     clearResults () ;
     m

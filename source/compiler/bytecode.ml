@@ -440,6 +440,7 @@ let displayIT  number = "<impl #" ^ (string_of_int number) ^ ">"
 let displayHT  number = "<hash #" ^ (string_of_int number) ^ ">"
 let displayBVT number = "<bvt #" ^ (string_of_int number) ^ ">"
 let displayL   offset = (Option.get (!findLabelFn)) (!offset)
+let displayET  number = "<extfun #" ^ (string_of_int number) ^ ">"
 
 (* display a kind data *)
 let displayK kind =

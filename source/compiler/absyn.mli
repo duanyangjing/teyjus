@@ -180,8 +180,10 @@ and acodeinfo =
     Builtin of int
   | Clauses of aclausesblock
 
-(* DJ - (cfunname, clibname, regcl) *)
-and aexterninfo = (astringinfo * astringinfo * bool)
+(* DJ - (index to externfun table, regcl) *)
+and aexterninfo = (int * bool)
+(* DJ - (cfunname, clibname) *)
+and aexternfun = (string * string)
   
 (*****************************************************************************
 *Variables (name based):
@@ -303,14 +305,14 @@ and aclausesblock = (aclause list ref * bool ref * int ref * int option ref)
 * (modname, imported, accumulated, constant table, kind table,
 * type abbre table, string list, global kind list, local kind list,
 * global constant list, local constant list, hidden constant list,
-* skeleton list, hskeleton list, clauses blocks list)
+* skeleton list, hskeleton list, clauses blocks list, extern fun list)
 *****************************************************************************)
 and amodule = 
     Module of (string * aimportedmodule list * aaccumulatedmodule list *
       aconstant Table.SymbolTable.t ref * akind Table.SymbolTable.t ref *
       atypeabbrev Table.SymbolTable.t * astringinfo list * akind list *
       akind list * aconstant list * aconstant list * aconstant list ref *
-      askeleton list * askeleton list ref * aclauseinfo ref)
+      askeleton list * askeleton list ref * aclauseinfo ref * aexternfun list)
   | Signature of (string * akind list * aconstant list)
   | ErrorModule
 
@@ -496,10 +498,8 @@ val makeConstantTerm : aconstant -> atype list -> pos -> aterm
 (*  val makeConstantType : aconstant -> atype *)
 val string_of_constant: aconstant -> string                                                           
 
-(* DJ - access libname field*)  
+(* DJ - access extern field*)  
 val getConstantExternInfo: aconstant -> aexterninfo
-val getConstantExtLibNameStrInfo: aconstant -> astringinfo
-val getConstantExtFunNameStrInfo: aconstant -> astringinfo
 val isExternConstant: aconstant -> bool
 val isRegCLExternConstant: aconstant -> bool
 (*************************************************************************)
@@ -660,6 +660,9 @@ val getSignatureName : amodule -> string
 val getSignatureGlobalKindsList : amodule -> akind list
 val getSignatureGlobalConstantsList : amodule -> aconstant list
 
+(* DJ - code added below *)
+val getModuleExtFunTable : amodule -> aexternfun list
+(* DJ - code added above *)
 (*************************************************************************)
 (*  aclauseinfo:                                                         *)
 (*************************************************************************)

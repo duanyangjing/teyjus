@@ -185,6 +185,21 @@ let disassembleStrings () =
   disassembleStringsAux 0 []  
 
 (***************************************************************************)
+(*                      EXTERNAL FUNCTION INFORMATION                      *)
+(***************************************************************************)
+let disassembleExtFuns () =
+  let numberExtFuns = Bytecode.readTwoBytes () in
+
+  let rec disassembleExtFunsAux number fs =
+	if number = numberExtFuns then List.rev fs
+	else
+	  let funname = Bytecode.readString () in
+          let libname = Bytecode.readString () in
+	  disassembleExtFunsAux (number + 1) ((funname, libname) :: fs)
+  in
+  disassembleExtFunsAux 0 []
+    
+(***************************************************************************)
 (*               IMPLICATION TABLE INFORMATION                             *)
 (***************************************************************************)
 let disassembleImplTabs gconsts lconsts hconsts =
@@ -338,6 +353,7 @@ let disassemble filename tableOnly instrOnly =
 	  let lConsts = disassembleConstants Bytecode.readLocalConstant  in
 	  let hConsts = disassembleConstants Bytecode.readHiddenConstant in
 	  let strings = disassembleStrings () in
+          let extfuns = disassembleExtFuns () in
 	  let impltabs = disassembleImplTabs gConsts lConsts hConsts in
 	  let hashtabs = disassembleHashTabs gConsts lConsts hConsts in
 	  let _ = Bytecode.readTwoBytes () in (* skip bv table *)
@@ -358,9 +374,9 @@ let disassemble filename tableOnly instrOnly =
 	  in
 	  let context =
 		Context.ModContext(filename, codeVer, modName,
-						   codeSize, gKinds, lKinds, tySkels, gConsts, lConsts,
-						   hConsts, strings, impltabs, hashtabs, moduletab,
-						   accRenamings, impRenamings, instructions)
+				   codeSize, gKinds, lKinds, tySkels, gConsts, lConsts,
+				   hConsts, strings, extfuns, impltabs, hashtabs,
+                                   moduletab, accRenamings, impRenamings, instructions)
 	  in
 	    Context.displayModContext context tableOnly instrOnly;
 	    Bytecode.closeInChannel ();

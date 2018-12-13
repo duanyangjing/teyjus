@@ -177,7 +177,18 @@ let writeStrings strs =
   Bytecode.writeint2 numStrs;
   map writeOneString strInfo 
 
-
+(****************************************************************************)
+(* DJ - code added                                                          *)
+(*                   WRITING OUT EXTERN FUNCTION INFO                       *)
+(****************************************************************************)
+let writeExtFuns extfuns =
+  let writeOneExtFun (cfunname, clibname) =
+    Bytecode.writeString cfunname;
+    Bytecode.writeString clibname;
+  in
+  Bytecode.writeint2 (List.length extfuns);
+  map writeOneExtFun extfuns
+    
 (*****************************************************************************)
 (*                WRITING OUT IMPLICATION GOAL DEFINITIONS                   *)
 (*****************************************************************************)
@@ -324,8 +335,8 @@ let writeInstructions code =
 let writeByteCode cgModule =
   match cgModule with
     Codegen.Module(modName, gkinds, lkinds, gconsts, lconsts, hconsts, defs, 
-				   nonExpDefs, expDefs, localDefs, tySkels, strs, impRenaming,
-				   accRenaming, instrs, hashTabs, implGoals) ->
+		   nonExpDefs, expDefs, localDefs, tySkels, strs, extfuns,
+                   impRenaming, accRenaming, instrs, hashTabs, implGoals) ->
 	  let Codegen.Instructions(code, codeSize) = instrs in
       (* [module header] *)
       writeHeader modName codeSize;
@@ -340,6 +351,8 @@ let writeByteCode cgModule =
       writeConstInfo gconsts lconsts hconsts;
       (* [strings] *)
       writeStrings strs;
+      (* [extfuns]*)
+      writeExtFuns extfuns;
       (* [implication goal tables] *)
       writeImpGoalInfo implGoals;
       (* [hash tables] *)

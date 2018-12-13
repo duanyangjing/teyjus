@@ -891,13 +891,11 @@ let rec processTopLevelClauses clauseTerms impmods clauseDefs anonymous =
 (** ********************************************************************** **)
 let processClauses amod clTerms newClTerms closeddefs = 
   match amod with
-    Absyn.Module(modname, modimps, modaccs, ctable, ktable, atable, externInfoStrs,
-     gkinds, lkinds, gconsts, lconsts, hconsts, skels, hskels, _)
+    Absyn.Module(modname, modimps, modaccs, ctable, ktable, atable, _,
+     gkinds, lkinds, gconsts, lconsts, hconsts, skels, hskels, _, extfuns)
     ->
       let () = Errormsg.log Errormsg.none 
         "Procesclauses.processClauses: processing clauses..." in
-      (* DJ - module string starts with extern fun and lib names *)
-      let () = modStr := externInfoStrs in
       setClosedDefs closeddefs;
       (* process anonymous clauses (those introduced for deorification), and*)
       (* increment them into the module definition list.                    *)
@@ -915,5 +913,5 @@ let processClauses amod clTerms newClTerms closeddefs =
                  "Procesclauses.processClauses: processed clauses" in
         Absyn.Module(modname, modimps, modaccs, ctable, ktable, atable, !modStr, 
                      gkinds, lkinds, gconsts, lconsts, hconsts, skels, hskels, 
-                     ref (Absyn.PreClauseBlocks(Absyn.Definitions(newClDefs))))
+                     ref (Absyn.PreClauseBlocks(Absyn.Definitions(newClDefs))), extfuns)
   | _ -> Errormsg.impossible Errormsg.none "processClauses: invalid module"

@@ -43,6 +43,11 @@ type constants = Absyn.aconstant option array
 type strings = string list
 
 (***************************************************************************)
+(* extern function information:                                            *)
+(***************************************************************************)
+type extfuns = Absyn.aexternfun list  
+  
+(***************************************************************************)
 (* implication tables:                                                     *)
 (* impltable: (next clause table, find code fn, search table)              *)
 (***************************************************************************)
@@ -96,6 +101,7 @@ type renamingtables =
 (*   local constants                         : constants                   *)
 (*   hidden constants                        : constants                   *)
 (*   strings                                 : strings                     *)
+(*   external function table                 : Absyn.aexternfun            *)
 (*   implication table                       : impltables                  *)
 (*   hash table                              : hashtables                  *)
 (*   module table                            : moduletable                 *)
@@ -105,9 +111,9 @@ type renamingtables =
 (***************************************************************************)
 type modcontext =
 	ModContext of (string * int * string * int * kinds * kinds * typeskels *
-				  constants * constants * constants * strings * impltables *
-				  hashtables * moduletables * renamingtables * renamingtables *
-				  Instr.instruction list)
+			 constants * constants * constants * strings * extfuns *
+                         impltables * hashtables * moduletables * renamingtables *
+                         renamingtables * Instr.instruction list)
 
 (***************************************************************************)
 (* Displaying module context                                               *)

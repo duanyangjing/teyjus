@@ -128,8 +128,10 @@ type cgimpgoallist = ImpGoalList of (cgimpgoalcode list * int)
 and  cgimpgoalcode = ImpGoalCode of (cgpreds * cgimppredinfo list * int)
 (* predicates defined in an implication goal: (predicate, offset)         *)
 and  cgimppredinfo = ImpPredInfo of (Absyn.aconstant * int )
-
-
+(* DJ- code added below *)
+and cgextfunlist = Absyn.aexternfun list
+(* DJ- code added above *)
+    
 (**************************************************************************)
 (* module:                                                                *)
 (*========================================================================*)
@@ -146,6 +148,7 @@ and  cgimppredinfo = ImpPredInfo of (Absyn.aconstant * int )
 (*  local predicates in this module,                                      *)
 (*  type skeletons,                                                       *)
 (*  strings,                                                              *)
+(*  extern functions                                                      *)
 (*  imported modules renaming info,                                       *)
 (*  accumulated modules renaming info,                                    *)
 (*  instructions,                                                         *)
@@ -156,8 +159,8 @@ and  cgimppredinfo = ImpPredInfo of (Absyn.aconstant * int )
 type cgmodule =
 	Module of string * cgkinds * cgkinds * cgconsts * cgconsts * 
 	    cgconsts * cgpreds * cgpreds * cgpreds * cgpreds * 
-		cgtypeskeletons * cgstrings * cgrenaming list * cgrenaming list * 
-		cginstructions * cghashtabs * cgimpgoallist 
+	    cgtypeskeletons * cgstrings * cgextfunlist * cgrenaming list *
+            cgrenaming list * cginstructions * cghashtabs * cgimpgoallist
 		
 
 (*****************************************************************************)

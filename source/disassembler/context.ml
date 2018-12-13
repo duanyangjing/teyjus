@@ -40,7 +40,12 @@ type constants = Absyn.aconstant option array
 (* string information:                                                     *)
 (***************************************************************************)
 type strings = string list
-
+  
+(***************************************************************************)
+(* extern function information:                                            *)
+(***************************************************************************)
+type extfuns = Absyn.aexternfun list 
+  
 (***************************************************************************)
 (* implication tables                                                      *)
 (* impltable: (next clause table, find code fn, search table)              *)
@@ -95,7 +100,9 @@ type renamingtables =
 (*   local constants                         : constants                   *)
 (*   hidden constants                        : constants                   *)
 (*   strings                                 : strings                     *)
+(*   external function table                 : Absyn.aexternfun            *)
 (*   implication table                       : impltables                  *)
+(*   hash table                              : hashtables                  *)
 (*   module table                            : moduletable                 *)
 (*   accumulate renaming table               : renamingtables              *)
 (*   import renaming table                   : renamingtables              *)
@@ -103,9 +110,9 @@ type renamingtables =
 (***************************************************************************)
 type modcontext =
 	ModContext of (string * int * string * int * kinds * kinds * typeskels *
-				  constants * constants * constants * strings * impltables *
-				  hashtables * moduletables * renamingtables * renamingtables *
-				  Instr.instruction list)
+			 constants * constants * constants * strings * extfuns *
+                         impltables * hashtables * moduletables * renamingtables *
+                         renamingtables * Instr.instruction list)
 
 (***************************************************************************)
 (* Display functions:                                                      *)
@@ -224,6 +231,24 @@ let printStrings strList =
   printLine "String table:";
   printStringAux strList 0
 
+(***************************************************************)
+(*                     Extern functions                            *)
+(***************************************************************)
+let printExtFuns extfuns =
+  let rec printExtFunsAux extfuns index =
+	match extfuns with
+	  [] -> ()
+	| ((funname, libname) :: rest)	->
+	        printLine ((string_of_int index) ^ ": " ^ funname ^
+                         ", from library: " ^ libname);
+		printExtFunsAux rest (index + 1)
+  in
+  
+  print_newline ();
+  printLine "External function table:";
+  printExtFunsAux extfuns 0
+
+    
 (***************************************************************)
 (*               IMPLICATION TABLES 		                   *)
 (***************************************************************)
@@ -382,7 +407,7 @@ let printInstructions instructions =
 let displayModContext modContext tableOnly instrOnly =
   match modContext with
 	ModContext(filename, bcversion, modname, codesize, gkinds, lkinds, tyskels,
-			   gconsts, lconsts, hconsts, strings, impltabs, hashtabs, 
+			   gconsts, lconsts, hconsts, strings, extfuns, impltabs, hashtabs, 
 			   moduletable, renamingacc, renamingimp, instructions) 
 	->
 	  printLine ("Disassembling from bytecode file: " ^ filename);
@@ -400,6 +425,7 @@ let displayModContext modContext tableOnly instrOnly =
 		 printConsts lconsts "Local constant table: " printLocalConst;
 		 printConsts hconsts "Hidden constant table: " printHiddenConst;
 		 printStrings strings;
+                 printExtFuns extfuns;
 		 printImplTables impltabs;
 		 printHashTables hashtabs;
 		 printModuleTable moduletable;

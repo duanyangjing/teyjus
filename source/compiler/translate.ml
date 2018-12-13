@@ -563,9 +563,21 @@ and translateConstants clist kindtable typeabbrevtable buildconstant =
 * We can have several resulting constants since a single preabsyn constant
 * may carry several symbols (as in the declaration: type p, q o.)
 **********************************************************************)
-(* DJ - c library names are stored as astringinfo and entered into module
-   string list *)
-and externInfoStrs : Absyn.astringinfo list ref = ref []
+(* DJ - code added below *)
+and externFuns : Absyn.aexternfun list ref = ref []
+
+and sameExtFun (funname1, libname1) (funname2, libname2) =
+  (funname1 = funname2) && (libname1 = libname2)
+
+and findExtFunIndex f flist =
+  let rec find f flist i =
+    match flist with
+      [] -> -1
+    | hd::tl -> if (sameExtFun f hd) then i else find f tl (i+1)
+  in
+  find f flist 0
+(* DJ - code added above*)
+    
 and translateConstant c clist kindtable typeabbrevtable buildconstant =
   (********************************************************************
   *translate':
@@ -579,15 +591,16 @@ and translateConstant c clist kindtable typeabbrevtable buildconstant =
     | [] -> clist
   in
 
-  (* DJ - convert string names to astringinfo, enter module string list *)
+  (* DJ - convert string names to index, create new entry in externfun table
+          if necessary *)
   let translateConstantExtInfo c =
     if not (Preabsyn.isExternConstant c) then None else
       let (cfunname, clibname, regcl) = Preabsyn.getConstantExternInfo c in
-      let fnameData = Absyn.StringData(cfunname, ref None, ref None) in
-      let lnameData = Absyn.StringData(clibname, ref None, ref None) in
-      externInfoStrs := fnameData :: !externInfoStrs;
-      externInfoStrs := lnameData :: !externInfoStrs;
-      Some(fnameData, lnameData, regcl)
+      let i = findExtFunIndex (cfunname, clibname) (!externFuns) in
+      let i' = if i >= 0 then i else
+        ((externFuns := !externFuns @ [(cfunname, clibname)]);
+        List.length !externFuns - 1) in
+      Some(i', regcl)
   in
 
   
@@ -1807,7 +1820,7 @@ and translateModule mod' ktable ctable atable =
     Preabsyn.Module(name, gconsts, lconsts, cconsts, uconsts, 
                     econsts, fixities,
                     gkinds, lkinds, tabbrevs, clauses, accummods,
-                    accumsigs, accumexts, usesigs, impmods) ->
+                    accumsigs, usesigs, impmods) ->
       (*  Translate the accumulated signatures  *)
       let accumsigs' = processSignatures accumsigs in
       let (_, accsigstables) = translateAccumSigs accumsigs' in
@@ -1904,9 +1917,9 @@ and translateModule mod' ktable ctable atable =
           (List.fold_left (getSkeleton) skeletons localconstants) in
         let amod =
           Absyn.Module(name, imps, accums, ref ctable, ref ktable,
-                       atable, !externInfoStrs, globalkinds, localkinds, 
-                       globalconstants,localconstants, ref [], skeletons, ref [], 
-                       ref(Absyn.ClauseBlocks([]))) in
+                       atable, [], globalkinds, localkinds, globalconstants, 
+                       localconstants, ref [], skeletons, ref [], 
+                       ref(Absyn.ClauseBlocks([])), !externFuns) in
           let _ = Errormsg.log Errormsg.none
             "Translate.translateModule: Translated module." in
         amod

@@ -127,7 +127,9 @@ type cgimpgoallist = ImpGoalList of (cgimpgoalcode list * int)
 and  cgimpgoalcode = ImpGoalCode of (cgpreds * cgimppredinfo list * int)
 (* predicates defined in an implication goal: (predicate, offset)         *)
 and  cgimppredinfo = ImpPredInfo of (Absyn.aconstant * int )
-
+(* DJ- code added below *)
+and cgextfunlist = Absyn.aexternfun list
+(* DJ- code added above *)
 
 (**************************************************************************)
 (* module:                                                                *)
@@ -145,6 +147,7 @@ and  cgimppredinfo = ImpPredInfo of (Absyn.aconstant * int )
 (*  local predicates in this module,                                      *)
 (*  type skeletons,                                                       *)
 (*  strings,                                                              *)
+(*  extern functions                                                      *)
 (*  imported modules renaming info,                                       *)
 (*  accumulated modules renaming info,                                    *)
 (*  instructions,                                                         *)
@@ -155,8 +158,8 @@ and  cgimppredinfo = ImpPredInfo of (Absyn.aconstant * int )
 type cgmodule =
 	Module of string * cgkinds * cgkinds * cgconsts * cgconsts * 
 	    cgconsts * cgpreds * cgpreds * cgpreds * cgpreds * 
-		cgtypeskeletons * cgstrings * cgrenaming list * cgrenaming list *
-		cginstructions * cghashtabs * cgimpgoallist 
+	    cgtypeskeletons * cgstrings * cgextfunlist * cgrenaming list *
+            cgrenaming list * cginstructions * cghashtabs * cgimpgoallist
 		
 
 (*****************************************************************************)
@@ -1134,7 +1137,7 @@ let generateModuleCode amod =
   genCodeInitialization ();
   match amod with
 	Absyn.Module(modname, modimps, modaccs, _, _, _, modstr, gkinds, lkinds, 
-				 gconsts, lconsts, hconsts, skels, hskels, clauses) ->
+				 gconsts, lconsts, hconsts, skels, hskels, clauses, extfuns) ->
       let () = Errormsg.log Errormsg.none
         "Codegen.generateModuleCode: generating module code..." in
       (* collect local constants appearing in acc modules for the use   *)
@@ -1178,7 +1181,7 @@ let generateModuleCode amod =
                  "Codegen.generateModuleCode: generated module code" in
         Module(modname, cgGKinds, cgLKinds, cgGConsts, cgLConsts, cgHConsts,
                cgDefs, cgGNonExpDefs, cgGExpDefs, cgLDefs, 
-               cgTySkels, cgStrings, cgImports, cgAccumulates, cgInstructions,
+               cgTySkels, cgStrings, extfuns, cgImports, cgAccumulates, cgInstructions,
                getHashTabs (), cgImpGoals)
   | _ -> Errormsg.impossible Errormsg.none 
 	"genModuleCode: invalid input module"

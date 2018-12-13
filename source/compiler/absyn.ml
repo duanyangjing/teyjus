@@ -105,8 +105,10 @@ and acodeinfo =
     Builtin of int
   | Clauses of aclausesblock
 
-(* DJ - (cfunname, clibname, regcl) *)
-and aexterninfo = (astringinfo * astringinfo * bool)
+(* DJ - (index to externfun table, regcl) *)
+and aexterninfo = (int * bool)
+(* DJ - (cfunname, clibname) *)
+and aexternfun = (string * string)
   
 (*****************************************************************************
 *Variables (name based):
@@ -225,14 +227,14 @@ and aclausesblock = (aclause list ref * bool ref * int ref * int option ref)
 * (modname, imported, accumulated, constant table, kind table, 
 * type abbre table, string list, global kind list, local kind list,
 * global constant list, local constant list, hidden constant list,
-* skeleton list, hskeleton list, clauses blocks list)
+* skeleton list, hskeleton list, clauses blocks list, extern fun list)
 *****************************************************************************)
 and amodule = 
     Module of (string * aimportedmodule list * aaccumulatedmodule list *
       aconstant Table.SymbolTable.t ref * akind Table.SymbolTable.t ref *
       atypeabbrev Table.SymbolTable.t * astringinfo list * akind list *
       akind list * aconstant list * aconstant list * aconstant list ref *
-      askeleton list * askeleton list ref * aclauseinfo ref)
+      askeleton list * askeleton list ref * aclauseinfo ref * aexternfun list)
   | Signature of (string * akind list * aconstant list)
   | ErrorModule
 
@@ -1675,17 +1677,7 @@ and sameTermStructureList ts ts' =
 let getConstantExternInfo = function
   Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,e,_) ->
     Option.get e
-      
-let getConstantExtLibNameStrInfo = function
-  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,e,_) ->
-    match Option.get e with
-      (funName, libName, regcl) -> libName
-
-let getConstantExtFunNameStrInfo = function
-  Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,e,_) ->
-    match Option.get e with
-      (funName, libName, regcl) -> funName
-      
+            
 let isExternConstant = function
   Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,e,_) ->
     Option.isSome e
@@ -1694,8 +1686,7 @@ let isRegCLExternConstant = function
   Constant(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,e,_) ->
     if not (Option.isSome e) then false else
       match Option.get e with
-        (funName, libName, regcl) -> regcl
-          
+        (i, regcl) -> regcl          
       
 (* DJ - code added above *)
   
@@ -1898,36 +1889,36 @@ let getGoalEnvAssocNthEnvSize gespList n =
 (*  amodule:                                                             *)
 (*************************************************************************)
 let getModuleName = function
-    Module(name,_,_,_,_,_,_,_,_,_,_,_,_,_,_) -> name
+    Module(name,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_) -> name
   | Signature(_) -> Errormsg.impossible Errormsg.none 
                       "getModuleName: not a module"
   | ErrorModule -> Errormsg.impossible Errormsg.none 
                      "getModuleName: invalid module"
 
 let setModuleName md name = match md with
-    Module(_,a,b,c,d,e,f,g,h,i,j,k,l,m,n) -> 
-      Module(name,a,b,c,d,e,f,g,h,i,j,k,l,m,n)
+    Module(_,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) -> 
+      Module(name,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o)
   | Signature(_) -> Errormsg.impossible Errormsg.none 
                       "getModuleName: not a module"
   | ErrorModule -> Errormsg.impossible Errormsg.none 
                      "getModuleName: invalid module"
 
 let getModuleGlobalKindsList = function
-    Module(_,_,_,_,_,_,_,gkinds,_,_,_,_,_,_,_) -> gkinds
+    Module(_,_,_,_,_,_,_,gkinds,_,_,_,_,_,_,_,_) -> gkinds
       | Signature(_) -> Errormsg.impossible Errormsg.none 
                           "getModuleGlobalKindList: not a module"
   | ErrorModule -> Errormsg.impossible Errormsg.none 
                      "getModuleGlobalKindList: invalid module"
 
 let getModuleGlobalConstantsList = function
-    Module(_,_,_,_,_,_,_,_,_,gconsts,_,_,_,_,_) -> gconsts
+    Module(_,_,_,_,_,_,_,_,_,gconsts,_,_,_,_,_,_) -> gconsts
   | Signature(_) -> Errormsg.impossible Errormsg.none 
                       "getModuleGlobalConstList: not a module"
   | ErrorModule -> Errormsg.impossible Errormsg.none 
                      "getModuleGlobalConstList: invalid module"
 
 let getModuleLocalConstantsList = function
-    Module(_,_,_,_,_,_,_,_,_,_,lconsts,_,_,_,_) -> lconsts
+    Module(_,_,_,_,_,_,_,_,_,_,lconsts,_,_,_,_,_) -> lconsts
   | Signature(_) -> Errormsg.impossible 
                       Errormsg.none 
                       "getModuleLocalConstantsList: not a module"
@@ -1936,49 +1927,49 @@ let getModuleLocalConstantsList = function
                      "getModuleLocalConstantsList: invalid module"
 
 let getModuleHiddenConstantsRef = function
-    Module(_,_,_,_,_,_,_,_,_,_,_,hcs,_,_,_) -> hcs
+    Module(_,_,_,_,_,_,_,_,_,_,_,hcs,_,_,_,_) -> hcs
   | Signature(_) -> Errormsg.impossible Errormsg.none 
                       "getModuleHiddenConstantsRef: not a module"
   | ErrorModule -> Errormsg.impossible Errormsg.none 
                      "getModuleHiddenConstantsRef: invalid module"
 
 let getModuleHiddenConstantSkeletonsRef = function
-    Module(_,_,_,_,_,_,_,_,_,_,_,_,_,hs,_) -> hs
+    Module(_,_,_,_,_,_,_,_,_,_,_,_,_,hs,_,_) -> hs
   | Signature(_) -> Errormsg.impossible Errormsg.none 
                       "getModuleHiddenConstantSkeletonsRef: not a module"
   | ErrorModule -> Errormsg.impossible Errormsg.none 
                      "getModuleHiddenConstantSkeletonsRef: invalid module"
 
 let getModuleHiddenConstantSkeletons = function
-  Module(_,_,_,_,_,_,_,_,_,_,_,_,_,hs,_) -> !hs
+  Module(_,_,_,_,_,_,_,_,_,_,_,_,_,hs,_,_) -> !hs
 | Signature(_) -> Errormsg.impossible Errormsg.none 
                     "getModuleHiddenConstantSkeletons: not a module"
 | ErrorModule -> Errormsg.impossible Errormsg.none 
                    "getModuleHiddenConstantSkeletons: invalid module"
 
 let getModuleConstantTable = function
-  Module(_,_,_,ctable,_,_,_,_,_,_,_,_,_,_,_) -> !ctable
+  Module(_,_,_,ctable,_,_,_,_,_,_,_,_,_,_,_,_) -> !ctable
 | Signature(_) -> Errormsg.impossible Errormsg.none 
                                       "getModuleConstantTable: not a module"
 | ErrorModule -> Errormsg.impossible Errormsg.none 
                                      "getModuleConstantTable: invalid module"
 
 let getModuleKindTable = function
-  Module(_,_,_,_,ktable,_,_,_,_,_,_,_,_,_,_) -> !ktable
+  Module(_,_,_,_,ktable,_,_,_,_,_,_,_,_,_,_,_) -> !ktable
 | Signature(_) -> Errormsg.impossible Errormsg.none 
                                       "getModuleKindTable: not a module"
 | ErrorModule -> Errormsg.impossible Errormsg.none 
                                      "getModuleKindTable: invalid module"
 
 let getModuleTypeAbbrevTable = function
-  Module(_,_,_,_,_,atable,_,_,_,_,_,_,_,_,_) -> atable
+  Module(_,_,_,_,_,atable,_,_,_,_,_,_,_,_,_,_) -> atable
 | Signature(_) -> Errormsg.impossible Errormsg.none 
                                       "getModuleTypeAbbrevTable: not a module"
 | ErrorModule -> Errormsg.impossible Errormsg.none 
                                      "getModuleTypeAbbrevTable: invalid module"
 
 let getModuleClausesRef = function
-  Module(_,_,_,_,_,_,_,_,_,_,_,_,_,_,c) -> c
+  Module(_,_,_,_,_,_,_,_,_,_,_,_,_,_,c,_) -> c
 | Signature(_) -> Errormsg.impossible Errormsg.none 
                     "getModuleClausesRef: argument is a signature"
 | ErrorModule -> Errormsg.impossible Errormsg.none 
@@ -2009,6 +2000,14 @@ let getSignatureName = function
 | ErrorModule -> Errormsg.impossible Errormsg.none 
                    "getSignatureName: argument invalid"  
 
+(* DJ - code added below *)
+let getModuleExtFunTable = function
+  Module(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,extFunTable) -> extFunTable
+| Signature(_) -> Errormsg.impossible Errormsg.none 
+                                      "getModuleExtFunTable: not a module"
+| ErrorModule -> Errormsg.impossible Errormsg.none 
+                                     "getModuleExtFunTable: invalid module"
+(* DJ - code added above *)
 (*************************************************************************)
 (*  aclauseinfo:                                                         *)
 (*************************************************************************)

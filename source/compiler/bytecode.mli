@@ -196,6 +196,7 @@ val displayIT  : int -> string
 val displayHT  : int -> string
 val displayBVT : int -> string
 val displayL   : int ref -> string
+val displayET  : int -> string
 
 (* display a kind data     *)
 val displayK : Absyn.akind -> string
