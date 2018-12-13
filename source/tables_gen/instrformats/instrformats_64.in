@@ -25,6 +25,7 @@ OPERAND TYPES
   IT     ImplTab        MemPtr         2   int       /* impl table address */
   HT     HashTab        MemPtr         2   int       /* hash table address */
   BVT    BranchTab      MemPtr         2   int       /* branch table for bound var indexing */
+  ET     ExtfunTab      MemPtr         2   int       /* External function table address */
   X                                                  /* operand list terminator */
   OPCODE Byte 1
 
@@ -156,8 +157,8 @@ INSTR CATEGORY
   I1I1WPX [I1 I1 P P P P P WP X X X X]
           I1I1WPX_LEN 16; I1I1WPX_I11 1; I1I1WPX_I12  2
 
-  SSI1X  [S S I1 X X X X X X X X X]
-         SSI1X_LEN 20; SSI1X_S1 1; SSI1X_S2 9; SSI1X_I1 17
+  ETX    [P P P P P P P ET X X X X]
+         ETX_LEN 16; ETX_ET  8
 
   CALL_I1_LEN 15
 
@@ -335,8 +336,8 @@ INSTRUCTIONS 147
    
    136       call_builtin               I1I1WPX      I1I1WPX_LEN;
    137       builtin                    I1X          I1X_LEN;
-   138       call_extern                SSI1X        SSI1X_LEN;
-   139       execute_extern             SSI1X        SSI1X_LEN;
+   138       call_extern                ETX          ETX_LEN;
+   139       execute_extern             ETX          ETX_LEN;
    140       stop                       X            X_LEN;
    141       halt                       X            X_LEN;
    142       fail                       X            X_LEN;
