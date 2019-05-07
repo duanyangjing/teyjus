@@ -23,10 +23,6 @@ OCAMLINCLUDES += $(CMP) $(DIS) $(SIM) $(LOD)
 # symbols defined in tjsim can be visible from shared libraries
 OCAMLFLAGS= -w -A -g -ccopt -rdynamic
 CFLAGS += -g
-
-#BYTE_ENABLED = true
-#NATIVE_ENABLED = false
-
 ############################################################
 # Compilation files
 #
@@ -128,7 +124,6 @@ SIM_C[] =
     #$(SIM)/builtins/io
     $(SIM)/builtins/meta
     $(SIM)/builtins/readterm
-    $(SIM)/C-interface/externcall
 
 SYS_C[] =
     $(SYS)/error
@@ -285,9 +280,9 @@ if $(not $(file-exists prebuilt))
 
   OCamlProgram(tjdis, $(DIS_MAIN) $(CMP_ML) $(LOD_ML) $(DIS_ML) $(FNT_ML))
 
-  #OCamlProgram(tjdepend, $(DEP_MAIN) $(DEP_ML) $(FNT_ML))
-  
-  #OCamlProgram(tjparse, $(PAR_MAIN) $(PAR_ML) $(FNT_ML))
+  OCamlProgram(tjdepend, $(DEP_MAIN) $(DEP_ML) $(FNT_ML))
+
+  OCamlProgram(tjparse, $(PAR_MAIN) $(PAR_ML) $(FNT_ML))
 
   # The simulator and linker require linking with C code
 
@@ -295,7 +290,6 @@ if $(not $(file-exists prebuilt))
     StaticCLibrary(libsim, \
       $(SIM_C) $(SYS_C) $(TBL_C) $(FNT_C) $(LOD_C) $(LNK_C) $(INC_C))
     OCAML_CLIBS += libsim
-    #OCAMLCFLAGS = -custom
     OCamlProgram(tjsim, \
       $(SIM_MAIN) $(LOD_ML) $(CMP_ML) $(FNT_ML) $(FNT_ML_TO_C))
 

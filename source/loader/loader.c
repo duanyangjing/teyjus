@@ -86,6 +86,7 @@ int LD_LOADER_Load(char* modname, int index)
     LD_TYSKEL_LoadTst(gmtEnt);
     LD_CONST_LoadCst(gmtEnt);
     LD_STRING_LoadStrings(gmtEnt);
+    LD_EXTFUN_LoadExtfuns(gmtEnt);
     LD_IMPLGOAL_LoadImplGoals(gmtEnt);
     LD_HASHTAB_LoadHashTabs(gmtEnt);
     LD_BVRTAB_LoadBvrTabs(gmtEnt);

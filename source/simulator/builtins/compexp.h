@@ -40,6 +40,5 @@
 /* experiment to change builtins to be called dynamically        */
 /*****************************************************************/
 #include "../dataformats.h"
-//void BICOMP_comp();
-void BICOMP_comp_wrapper(DF_TermPtr args[]);
+void BICOMP_comp();
 #endif  //COMPEXP_H

@@ -1816,21 +1816,21 @@ void SINSTR_builtin()                   //builtin n -- I1_X
 // DJ - code added below
 void SINSTR_call_extern()               //call_extern cfun clib n -- S_S_I1_X
 {
-    DF_StrDataPtr str1;
-    INSACC_SSI1X(str, str1, n);
-    char *cfun = DF_strDataToCString(str);
-    char *clib = DF_strDataToCString(str1);
+    void* addr;
+    INSACC_ETX(addr);
+    // first operand is actually a function pointer
+    void (*funstub)() = addr;
     AM_cpreg = AM_preg;
-    extern_call(cfun, clib, n);
+    (*funstub)();
 }
 
 void SINSTR_execute_extern()            //execute_extern cfun clib n -- S_S_I1_X
 {
-    DF_StrDataPtr str1;
-    INSACC_SSI1X(str, str1, n);
-    char *cfun = DF_strDataToCString(str);
-    char *clib = DF_strDataToCString(str1);
-    extern_call(cfun, clib, n);
+    void* addr;
+    INSACC_ETX(addr);
+    // first operand is actually a function pointer
+    void (*funstub)() = addr;
+    (*funstub)();
 }
 // DJ - code added above
 

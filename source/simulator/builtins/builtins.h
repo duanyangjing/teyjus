@@ -53,28 +53,28 @@ typedef enum
     BI_STR_LE         = 14,
     BI_STR_GE         = 15,
     //IO
-    BI_IO_OPEN_IN     = 16,
-    BI_IO_OPEN_OUT    = 17,
-    BI_IO_OPEN_APP    = 18,
-    BI_IO_CLOSE_IN    = 19,
-    BI_IO_CLOSE_OUT   = 20,
-    BI_IO_OPEN_STR    = 21,
-    BI_IO_INPUT       = 22,
-    BI_IO_OUTPUT      = 23,
-    BI_IO_INPUT_LINE  = 24,
-    BI_IO_LOOKAHEAD   = 25,
-    BI_IO_EOF         = 26,
-    BI_IO_FLUSH       = 27,
-    BI_IO_PRINT       = 28,
-    BI_IO_READ        = 29,
-    BI_IO_PRINTTERM   = 30,
-    BI_IO_TERM_TO_STR = 31,
-    BI_IO_STR_TO_TERM = 32,
-    BI_IO_READTERM    = 33,
-    BI_IO_GETENV      = 34,
-    BI_IO_OPEN_SOCKET = 35,
-    BI_UNIX_TIME      = 36,
-    BI_SYSTEM         = 37
+    /* BI_IO_OPEN_IN     = 16, */
+    /* BI_IO_OPEN_OUT    = 17, */
+    /* BI_IO_OPEN_APP    = 18, */
+    /* BI_IO_CLOSE_IN    = 19, */
+    /* BI_IO_CLOSE_OUT   = 20, */
+    /* BI_IO_OPEN_STR    = 21, */
+    /* BI_IO_INPUT       = 22, */
+    /* BI_IO_OUTPUT      = 23, */
+    /* BI_IO_INPUT_LINE  = 24, */
+    /* BI_IO_LOOKAHEAD   = 25, */
+    /* BI_IO_EOF         = 26, */
+    /* BI_IO_FLUSH       = 27, */
+    /* BI_IO_PRINT       = 28, */
+    /* BI_IO_READ        = 29, */
+    /* BI_IO_PRINTTERM   = 30, */
+    /* BI_IO_TERM_TO_STR = 31, */
+    /* BI_IO_STR_TO_TERM = 32, */
+    /* BI_IO_READTERM    = 33, */
+    /* BI_IO_GETENV      = 34, */
+    /* BI_IO_OPEN_SOCKET = 35, */
+    /* BI_UNIX_TIME      = 36, */
+    /* BI_SYSTEM         = 37 */
 } BI_BuiltinTabIndex;
 
 /*****************************************************************************/

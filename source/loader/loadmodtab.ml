@@ -133,6 +133,6 @@ let loadModuleTable modName =
   Bytecode.closeInChannel ();
   Absyn.Module(modName, [], [], ref constSymTab, ref kindSymTab, 
 			   Pervasive.pervasiveTypeAbbrevs, [], [], [], [], [], 
-			   ref [], [], ref [], ref (Absyn.ClauseBlocks []))
+			   ref [], [], ref [], ref (Absyn.ClauseBlocks []), [])
 
 

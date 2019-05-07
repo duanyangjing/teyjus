@@ -38,12 +38,11 @@
  ****************************************************************************/
 #include "compexp.h"
 #include "evalexp.h"
-#include "../C-interface/interface.h"
-/* #include "builtins.h" */
-/* #include "../abstmachine.h"  //to be modified */
-/* #include "../dataformats.h"  //to be modified */
-/* #include "../mcstring.h"     //to be modified */
-/* #include "../../system/error.h" //to be modified */
+#include "builtins.h"
+#include "../abstmachine.h"  //to be modified
+#include "../dataformats.h"  //to be modified
+#include "../mcstring.h"     //to be modified
+#include "../../system/error.h" //to be modified
 
 void BICOMP_comp()
 {

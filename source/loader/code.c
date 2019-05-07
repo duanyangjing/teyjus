@@ -30,6 +30,7 @@
 #include "code.h"
 #include "importtab.h"
 #include "ld_message.h"
+#include "extfun.h"
 
 CSpacePtr codeSpaceBeg;
 
@@ -117,9 +118,14 @@ int LD_CODE_LoadCode(MEM_GmtEnt* ent)
               break;
               
           case INSTR_S:
-              *(DF_StrDataPtr*)(code+j)=LD_STRING_GetStringAddr();
+	      *(DF_StrDataPtr*)(code+j)=LD_STRING_GetStringAddr();
               j+=sizeof(WordPtr);
               break;
+
+	  case INSTR_ET:
+	      *(WordPtr*)(code+j)=LD_EXTFUN_GetFunAddr();
+	      j+=sizeof(WordPtr);
+	      break;
               
           case INSTR_L:
               *(CSpacePtr*)(code+j)=LD_CODE_GetCodeInd();
@@ -154,6 +160,7 @@ int LD_CODE_LoadCode(MEM_GmtEnt* ent)
       LD_debug("\n");
       i += INSTR_instrSize(opcode);
   }
+  LD_EXTFUN_Cleanup();
   return 0;
 }
 

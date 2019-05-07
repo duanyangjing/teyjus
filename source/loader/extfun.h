@@ -17,34 +17,19 @@
 // You should have received a copy of the GNU General Public License        //
 // along with Teyjus.  If not, see <http://www.gnu.org/licenses/>.          //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef _STRINGS_H_
-#define _STRINGS_H_
+#ifndef _EXTFUN_H_
+#define _EXTFUN_H_
 
 #include "../system/memory.h"
-#include "../simulator/dataformats.h"
+#include "../simulator/mctypes.h"
+#include <dlfcn.h>
 
-/**
-* \brief Load the string table of a module.
-* \pre The file position is at the beginning of the module files string table, ent points to the module table entry being loaded.
-* \post The file position is moved to just after the string table.
-* \throw LD_MallocError
-**/
-void LD_STRING_LoadStrings(MEM_GmtEnt* ent);
+// Load the external function table
+void LD_EXTFUN_LoadExtfuns(MEM_GmtEnt* gmtEnt);
+// Read an index to the extfun table, dylink if needed, return the address of
+// the function
+WordPtr LD_EXTFUN_GetFunAddr();
+// Clean up the external function table (it's not needed after loading)
+void LD_EXTFUN_Cleanup();
 
-/**
- * \brief Load a string.
- * \pre The file position is at the beginning of a string, ent points to the module table entry being loaded.
- * \post The file position is moved to just after the string.
- * \throw LD_MallocError
- **/
-DF_StrDataPtr LD_STRING_LoadString(MEM_GmtEnt* ent);
-
-DF_StrDataPtr LD_STRING_GetStringAddr();
-/* DJ - code added below 
- * read index of extern fun/lib strings to lookup hashtable */
-int LD_STRING_GetStringInd();
-DF_StrDataPtr LD_STRING_GetStringAddrFromInd(int i);
-/* DJ - code added above */
-void LD_STRING_Cleanup();
-
-#endif //_STRINGS_H_
+#endif //_CODE_H_

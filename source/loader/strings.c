@@ -67,6 +67,21 @@ DF_StrDataPtr LD_STRING_GetStringAddr()
   return LD_STRING_Strings[i];
 }
 
+/* DJ - code added below */
+int LD_STRING_GetStringInd()
+{
+  int i = (int)LD_FILE_GET2();
+  return i;
+}
+
+DF_StrDataPtr LD_STRING_GetStringAddrFromInd(int i)
+{
+  if(0>i || i>LD_STRING_numStrings)
+    EM_THROW(LD_LoadError);
+  return LD_STRING_Strings[i];
+}
+/* DJ - code added above*/
+
 void LD_STRING_Cleanup()
 {
   if(LD_STRING_Strings)
