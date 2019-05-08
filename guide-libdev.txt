@@ -13,8 +13,9 @@ to bridge the gap between data representation and calling convention between C
 and lambda prolog.
 
 
-Creating lambda program signature --------------------------------- The
-signature file follows the same general structure as a regular lambda prolog
+Creating lambda program signature
+---------------------------------
+The signature file follows the same general structure as a regular lambda prolog
 signature, but requires a little more information for the compiler to manage
 external predicates. The required syntax is as follows:
 
@@ -53,17 +54,23 @@ builtin unification procedure, and this additional invocation requires
 rearranging the original argument registers.
 
 
-Creating C library ------------------ The original C program needs to be
-extended in several ways before it can be properly called from the lpWAM. The
-procedure directly invoked by the simulator will have to convert the arguments,
-which have the form of λProlog data, into a representation suitable for C and,
-conversely, it would have to transform the results obtained from the computation
-in C into the corresponding λProlog form; we refer to these phases as the
-marshalling and unmarshalling of the data. A typical function as entry point to
-the library should have the following structure:
+Creating C library
+------------------
+The original C program needs to be extended in several ways before it can be
+properly called from the lpWAM. The procedure directly invoked by the simulator
+will have to convert the arguments, which have the form of λProlog data, into a
+representation suitable for C and, conversely, it would have to transform the
+results obtained from the computation in C into the corresponding λProlog form;
+we refer to these phases as the marshalling and unmarshalling of the data. A
+typical function as entry point to the library should have the following
+structure:
 
-void cname() { // call marshalling functions on arguments // invoke the actual C
-function // call unmarshalling functions on return of the C function }
+void cname()
+{
+  // call marshalling functions on arguments
+  // invoke the actual C function
+  // call unmarshalling functions on return of the C function
+}
 
 where cname is the symbol name that the simulator identifies as the entry point;
 this name should be the same as the cname field in the type definition for a
@@ -96,9 +103,17 @@ An example:
 
 int plus(int x, int y) { return x + y; }
 
-void plus_wrapper() {
+void plus_wrapper()
+{
   int x = TJ_getInt(1);
   int y = TJ_getInt(2);
   int ret = plus(x,y);
   TJ_returnInt(3, ret);
 }
+
+Finally the C code needs to be compiled into a shared library(.so file) that
+is later dynamically linked with the simulator. Code can be compiled as:
+  gcc -g -shared -fpic -o lib.so lib.c
+
+In the end this shared library and the signature file should be delievered
+to programmers to use together with their native code.
