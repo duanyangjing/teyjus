@@ -44,10 +44,10 @@ extfunptr* LD_EXTFUN_Extfuns;
 // load the shared library and return addr to function symbol
 void* dyload(char* cfun, char* clib)
 {
-    char libPath[128];
+    char libPath[256];
     // assume this is a dedicated library path
     strcpy(libPath,
-	   "/home/jingx061/Projects/teyjus-fork/teyjus/lib/");
+	   "./lib/");
     strcat(libPath, clib);
     // shared library extension
     strcat(libPath, ".so");
@@ -61,7 +61,6 @@ void* dyload(char* cfun, char* clib)
 
     printf("loaded shared library %s\n", libPath);
     dlerror();
-    //int (*funStub)(DF_TermPtr*, BI_BuiltinTabIndex);
     // Get a function pointer to wrapper function given by funName
     void* funStub = dlsym(handle, cfun);
     char *error = dlerror();
@@ -69,11 +68,7 @@ void* dyload(char* cfun, char* clib)
         fprintf(stderr, "%s\n", error);
         EM_THROW(EM_FAIL);
     }
-    // Need to set up args array to pass to the wrapper
-    /* DF_TermPtr lOp = (DF_TermPtr)AM_reg(1); */
-    /* DF_TermPtr rOp = (DF_TermPtr)AM_reg(2); */
-    /* DF_TermPtr args[2] = {lOp, rOp}; */
-    /* int success = (*funStub)(args, BI_number); */
+    
     return funStub;
 }
 

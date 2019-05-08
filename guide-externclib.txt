@@ -1,0 +1,26 @@
+This is a guide on how to use lambda prolog libraries implemented in C.
+A lambda prolog "library" can be best conceptualized as a module
+that has C programs as its implementation instead of a .mod file. 
+Programmers can integrate these libraries as additional modules and 
+use them just like native predicates.
+
+There are two files one needs to acquire for the library: one is a lambda
+program signature file that defines the interface of the predicates available in
+the library. The other file is the implementation of this signature as a
+compiled C shared library.  Creating these two files is usually the
+responsibility of a library developer.
+
+
+How to use the library
+---------------------------------
+You should integrate the signature in your own module by the following syntax:
+  accum_extern <signame>
+
+This allows you to use the predicates defined in the signature in your own code.
+Typically the first several arguments should be bounded with some value, and
+only the very last argument is allowed to have an unbound variable, because it's
+usually the last argument that holds the return value of the corresponding C computation.
+
+Then the C shared library (.so file) should be put into a dedicated library path
+in your Teyjus installation directory:
+  PATH_OF_YOUR_TEYJUS_INSTALLATION/lib/

@@ -108,5 +108,10 @@ void TJ_returnStr(int i, char* s)
   AM_preg = AM_eqCode;
 }
 
+/* 
+ * Maybe I missed something from the build tool, but it seems only when the 
+ * simulator calls some function in this file is this file being linked 
+ * with the simulator. So this function is called by BIEVAL_eval().
+ */
 void noop(){}
 

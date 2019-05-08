@@ -1,0 +1,104 @@
+This is a guide for library developers who need to create lambda prolog
+libraries from C programs. A lambda prolog "library" can be best conceptualized
+as a module that has C programs as its implementation instead of a .mod
+file. Lambda prolog programmers should be able to integrate these libraries as
+additional modules and use them just like native predicates.
+
+There are two files one needs to create: one is a lambda program signature file
+that defines the interface of the predicates available in this library; this
+signature will later be incorportated into other user-defined modules. The other
+file is the implementation of this signature as a compiled C shared
+library. This C library should be extended from the original C program in order
+to bridge the gap between data representation and calling convention between C
+and lambda prolog.
+
+
+Creating lambda program signature --------------------------------- The
+signature file follows the same general structure as a regular lambda prolog
+signature, but requires a little more information for the compiler to manage
+external predicates. The required syntax is as follows:
+
+sig <signame>.
+#lib <clibname>.
+extern type <lpname1> <cname1> <type1>.
+...
+extern type <lpnameN> <cnameN> <typeN>.
+regcl <lpnames>.
+
+The first line in this declaration sequence associates the name signame with
+this signature; this name can be employed in other user-defined modules to
+include the definitions in this signature. The second line indicates the
+location of the C library code that implements the builtin functions that need
+to be imported into the λProlog environment. This is followed by a sequence of
+declarations that identify a collection of builtin predicates together with
+their types and entry points that are ostensibly supported by the C library
+code: in a declaration of the form
+
+extern type <lpname> <cname> <type>
+
+<lpname> stands for the name of the predicate that can be used in λProlog
+programs, <cname> is a symbol that identifies the entry point and <type>
+provides the type of the predicate. The last line in the signature file
+identifies the subcollection of the predicates provided in this signature that
+are “register clobbering.” The lpWAM uses argument reg- isters for local
+computations in a predicate invocation as well as for passing parameters to
+predicates. In general, invocation of predicates can destroy the contents of an
+existing register and the compiler has to therefore assume that the values in
+argument registers will not be preserved across a call. However, it is useful to
+know if a predicate will not destroy the values in argument registers: this
+information can be utilized in allocating registers in a way that minimizes data
+movement. Typically external predicates should belong to this category because
+at the end of an external predicate call control usually transfers to the
+builtin unification procedure, and this additional invocation requires
+rearranging the original argument registers.
+
+
+Creating C library ------------------ The original C program needs to be
+extended in several ways before it can be properly called from the lpWAM. The
+procedure directly invoked by the simulator will have to convert the arguments,
+which have the form of λProlog data, into a representation suitable for C and,
+conversely, it would have to transform the results obtained from the computation
+in C into the corresponding λProlog form; we refer to these phases as the
+marshalling and unmarshalling of the data. A typical function as entry point to
+the library should have the following structure:
+
+void cname() { // call marshalling functions on arguments // invoke the actual C
+function // call unmarshalling functions on return of the C function }
+
+where cname is the symbol name that the simulator identifies as the entry point;
+this name should be the same as the cname field in the type definition for a
+external predicate predicate in the corresponding signature file. Marshalling
+and unmarshalling functions are defined in a header file called
+"cinterface.h". Here are the function signatures:
+
+/* Get data from argument register i */
+int TJ_getInt(int i);
+float TJ_getReal(int i);
+const char* TJ_getStr(int i);
+
+/*
+ * Unify the return value of a C function with an existing term at
+ * argument i (the one that is to hold the return value).
+ */
+void TJ_returnInt(int i, int val);
+void TJ_returnReal(int i, float val);
+void TJ_returnStr(int i, char* s);
+
+The get functions take lpWAM data from argument register i and transform them
+into C representation. These functions should be called on all arguments. The
+return functions takes C data and transform them into lpWAM representation, and
+then unifies the term with the original term at argument position i. These
+functions should be called on the return value with the argument position that
+is supposed to hold the return value. The last argument is reserved for this
+purpose.
+
+An example:
+
+int plus(int x, int y) { return x + y; }
+
+void plus_wrapper() {
+  int x = TJ_getInt(1);
+  int y = TJ_getInt(2);
+  int ret = plus(x,y);
+  TJ_returnInt(3, ret);
+}
