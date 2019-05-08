@@ -3,10 +3,12 @@
 #include "abstmachine.h"
 #include "dataformats.h"
 #include "mcstring.h"
+#include "../system/error.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+
 
 int TJ_getInt(int i)
 {
@@ -31,6 +33,7 @@ float TJ_getReal(int i)
 
   return val;
 }
+
 
 const char* TJ_getStr(int i)
 {
@@ -73,13 +76,37 @@ void TJ_returnReal(int i, float val)
   AM_preg = AM_eqCode;
 }
 
-void TJ_returnStr(int i, const char* s)
+
+DF_StrDataPtr mkStrDataPtrFromCString(char* s)
+{
+  MemPtr strDataHead = AM_hreg;
+  MemPtr strData     = strDataHead + DF_STRDATA_HEAD_SIZE;
+  MemPtr nhreg;
+  int    num, size;
+  char*  buffer;
+
+  num = strlen(s) + 1;
+  size = MCSTR_numWords(num);
+  nhreg = strData + size;
+
+  AM_heapError(nhreg);
+  DF_mkStrDataHead(strDataHead);
+  MCSTR_toString((MCSTR_Str)strData, s, num - 1);
+  AM_hreg = nhreg;
+
+  return (DF_StrDataPtr)strDataHead;
+}
+
+void TJ_returnStr(int i, char* s)
 {
   DF_TermPtr t = (DF_TermPtr)AM_reg(i);
 
-  DF_mkStr((MemPtr)AM_reg(1), val);
+  // length + actual data + null terminator
+  
+  DF_mkStr((MemPtr)AM_reg(1), mkStrDataPtrFromCString(s));
   DF_copyAtomic((DF_TermPtr)(AM_reg(i)), (MemPtr)AM_reg(2));
-  AM_preg = AM_eqcode;
+  AM_preg = AM_eqCode;
 }
 
 void noop(){}
+

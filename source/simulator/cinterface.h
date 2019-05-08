@@ -12,7 +12,7 @@ const char* TJ_getStr(int i);
  */
 void TJ_returnInt(int i, int val);
 void TJ_returnReal(int i, float val);
-void TJ_returnStr(int i, const char* s);
+void TJ_returnStr(int i, char* s);
 
 void noop();
 
