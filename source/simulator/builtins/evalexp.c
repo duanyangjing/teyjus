@@ -35,7 +35,7 @@
 #include "../abstmachine.h" 
 #include "../../tables/pervasives.h" 
 #include "../../system/error.h"      
-
+#include "../cinterface.h"
 
 /************************************************************************
  *                                                                      *
@@ -77,6 +77,7 @@ void BIEVAL_eval()
     }
     //binding X to V
     AM_preg = AM_eqCode;
+    noop();
     return;
 }
 

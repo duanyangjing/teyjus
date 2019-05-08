@@ -118,6 +118,7 @@ SIM_C[] =
     $(SIM)/simulator
     $(SIM)/trail
     $(SIM)/types
+    $(SIM)/cinterface
     $(SIM)/builtins/builtins
     $(SIM)/builtins/compexp
     $(SIM)/builtins/evalexp

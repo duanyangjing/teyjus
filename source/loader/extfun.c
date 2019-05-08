@@ -24,6 +24,7 @@
 #include <string.h>
 #include "ld_message.h"
 #include "loader.h"
+#include "file.h"
 #include "../system/memory.h"
 #include "../system/error.h"
 #include "../simulator/mctypes.h"
@@ -46,7 +47,7 @@ void* dyload(char* cfun, char* clib)
     char libPath[128];
     // assume this is a dedicated library path
     strcpy(libPath,
-	   "/home/grad06/jingx061/Projects/teyjus-fork/teyjus/lib/");
+	   "/home/jingx061/Projects/teyjus-fork/teyjus/lib/");
     strcat(libPath, clib);
     // shared library extension
     strcat(libPath, ".so");
