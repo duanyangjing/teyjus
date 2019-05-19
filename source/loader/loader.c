@@ -33,6 +33,7 @@
 #include "bvrtab.h"
 #include "implgoal.h"
 #include "importtab.h"
+#include "extfun.h"
 
 static char* LD_LOADER_path = "./";
 void  LD_LOADER_setPath(char* path) 

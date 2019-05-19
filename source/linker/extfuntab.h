@@ -17,8 +17,8 @@
 // You should have received a copy of the GNU General Public License        //
 // along with Teyjus.  If not, see <http://www.gnu.org/licenses/>.          //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef _STRINGSPACE_H_
-#define _STRINGSPACE_H_
+#ifndef _EXTFUNTAB_H_
+#define _EXTFUNTAB_H_
 
 #include "module.h"
 extern void LK_EXTFUNS_Init();

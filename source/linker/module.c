@@ -36,6 +36,7 @@
 #include "rename.h"
 #include "../system/error.h"
 #include "linker_message.h"
+#include "extfuntab.h"
 
 static char* LK_path = "./";
 void  LK_setPath(char* path) 

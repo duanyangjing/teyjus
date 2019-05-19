@@ -1,21 +1,21 @@
-This is a guide for library developers who need to create lambda prolog
-libraries from C programs. A lambda prolog "library" can be best conceptualized
+This is a guide for library developers who need to create λProlog
+libraries from C programs. A λProlog "library" can be best conceptualized
 as a module that has C programs as its implementation instead of a .mod
-file. Lambda prolog programmers should be able to integrate these libraries as
+file. λProlog programmers should be able to integrate these libraries as
 additional modules and use them just like native predicates.
 
 There are two files one needs to create: one is a lambda program signature file
 that defines the interface of the predicates available in this library; this
-signature will later be incorportated into other user-defined modules. The other
+signature will later be incorporated into other user-defined modules. The other
 file is the implementation of this signature as a compiled C shared
 library. This C library should be extended from the original C program in order
 to bridge the gap between data representation and calling convention between C
-and lambda prolog.
+and λProlog.
 
 
-Creating lambda program signature
+Creating λProlog signature
 ---------------------------------
-The signature file follows the same general structure as a regular lambda prolog
+The signature file follows the same general structure as a regular λProlog
 signature, but requires a little more information for the compiler to manage
 external predicates. The required syntax is as follows:
 
@@ -41,21 +41,20 @@ extern type <lpname> <cname> <type>
 programs, <cname> is a symbol that identifies the entry point and <type>
 provides the type of the predicate. The last line in the signature file
 identifies the subcollection of the predicates provided in this signature that
-are “register clobbering.” The lpWAM uses argument reg- isters for local
+are “register clobbering.” The lpWAM uses argument registers for local
 computations in a predicate invocation as well as for passing parameters to
 predicates. In general, invocation of predicates can destroy the contents of an
 existing register and the compiler has to therefore assume that the values in
 argument registers will not be preserved across a call. However, it is useful to
 know if a predicate will not destroy the values in argument registers: this
 information can be utilized in allocating registers in a way that minimizes data
-movement. Typically external predicates should belong to this category because
-at the end of an external predicate call control usually transfers to the
-builtin unification procedure, and this additional invocation requires
-rearranging the original argument registers.
+movement. This decision can be made based on what functions from the simulator
+interface are being used to extend the original C code, which will be discussed
+in the next section.
 
 
-Creating C library
-------------------
+Creating C shared library object
+--------------------------------
 The original C program needs to be extended in several ways before it can be
 properly called from the lpWAM. The procedure directly invoked by the simulator
 will have to convert the arguments, which have the form of λProlog data, into a
@@ -75,8 +74,9 @@ void cname()
 where cname is the symbol name that the simulator identifies as the entry point;
 this name should be the same as the cname field in the type definition for a
 external predicate predicate in the corresponding signature file. Marshalling
-and unmarshalling functions are defined in a header file called
-"cinterface.h". Here are the function signatures:
+and unmarshalling functions are defined in a header file at
+  source/simulator/cinterface.h
+Here are the some examples of the functions available:
 
 /* Get data from argument register i */
 int TJ_getInt(int i);
@@ -98,6 +98,12 @@ then unifies the term with the original term at argument position i. These
 functions should be called on the return value with the argument position that
 is supposed to hold the return value. The last argument is reserved for this
 purpose.
+
+Also functions that will result in destroying original values in argument
+registers will be documented in this file. Typically all "return" functions
+will have this behavior because in the end of these functions control is
+usually transferred to the builtin unification procedure, which requires
+rearranging the original argument registers.
 
 An example:
 
