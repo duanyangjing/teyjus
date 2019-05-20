@@ -46,9 +46,9 @@ void* dyload(char* cfun, char* clib)
 {
     char libPath[256];
     // assume this is a dedicated library path
-    strcpy(libPath,
-	   "./lib/");
-    strcat(libPath, clib);
+    //strcpy(libPath, "./lib/");
+    //strcat(libPath, clib);
+    strcpy(libPath, clib);
     // shared library extension
     strcat(libPath, ".so");
 
@@ -59,7 +59,7 @@ void* dyload(char* cfun, char* clib)
         EM_THROW(EM_FAIL);
     }
 
-    printf("loaded shared library %s\n", libPath);
+    //printf("loaded shared library %s\n", libPath);
     dlerror();
     // Get a function pointer to wrapper function given by funName
     void* funStub = dlsym(handle, cfun);

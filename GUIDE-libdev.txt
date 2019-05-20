@@ -119,7 +119,7 @@ void plus_wrapper()
 
 Finally the C code needs to be compiled into a shared library(.so file) that
 is later dynamically linked with the simulator. Code can be compiled as:
-  gcc -g -shared -fpic -o lib.so lib.c
+  gcc -shared -fpic -o lib.so lib.c
 
 In the end this shared library and the signature file should be delievered
 to programmers to use together with their native code.

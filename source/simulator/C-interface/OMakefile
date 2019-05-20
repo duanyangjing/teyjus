@@ -1,9 +1,0 @@
-LIB = $(dir lib)
-
-CFLAGS = -shared
-CFLAGS += -fpic
-
-
-section
-  DynamicCLibrary()
-  C

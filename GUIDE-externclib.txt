@@ -24,6 +24,6 @@ only the very last argument is allowed to have an unbound variable, because it's
 usually the last argument that holds the return value of the corresponding C
 computation.
 
-Then the C shared library (.so file) should be put into a dedicated library path
-in your Teyjus installation directory:
-  PATH_OF_YOUR_TEYJUS_INSTALLATION/lib/
+The dynamic linker should be notified the location of the C shared library (.so file).
+This can be done by setting the environment variable LD_LIBRARY_PATH:
+  export LD_LIBRARY_PATH=your_path_for_libraries:$LD_LIBRARY_PATH

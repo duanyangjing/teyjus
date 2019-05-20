@@ -1,9 +1,0 @@
-accum_sig <extern sig>
-
-linker build different compiled modules into single bytecode, 
-nothing to bring in for the extern module.
-
-when/how are instructions.h generated
-
------------------------------------------------------
-why simulator needs to link with compiler

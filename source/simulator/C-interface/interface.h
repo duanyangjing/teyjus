@@ -3,6 +3,7 @@
  * between the abstract machine and the external library.
  */
 
+
 // everything in error.h
 #include "../../system/error.h"
 
@@ -18,12 +19,13 @@
 // DJ: needed for read/readterm/term_to_string/string_to_term
 #include "../builtins/readterm.h"
 #include "../../front/readterm_c.h"
-
+#include "../hnorm.h"
+#include "../types.h"
+#include "../trail.h"
 // everything except for typedef DF_Tag, and Disagreement set definitions
 //#include "../dataformats.h"
 #ifndef DATAFORMATS_H
 #define DATAFORMATS_H
-
 /********************************************************************/
 /*   DATA TAG FIELD IN TYPES AND TERMS                              */
 /********************************************************************/

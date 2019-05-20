@@ -1,0 +1,40 @@
+/lib/ contains a list of libraries I have made for testing purposes.
+
+io.so and os.so contain the original io and os builtins that are now externalized.
+Please note that when these parts are externalized we were using the old idea of
+directly exposing simulator internal symbols. So they are including the "old"
+interface file in "source/simulator/C-interface/interface.h".
+
+The other two libraries:
+  arith.so - contains some math predicates
+  str.so   - contains a predicate to reverse a string
+They use the new interface in "source/simulator/cinterface.h", which has encapsulated
+some of the interface functions.
+
+
+Known Issues
+------------
+1. In the end we definitely would like to use one single interface file, which means
+the code in the io and os module would have to be rewritten.
+
+2. Four subsystems can be successfully built, including tjcc, tjlink, tjsim, tjdis.
+tjdepend and tjparse do not compile for now, but should be easy to fix.
+
+3. There seem to be warnings when code is first built, but they are not from the
+code that I write.
+
+4. There is one issue related to exposing symbols in dynamic symbol tables. According
+to gcc's documentation, the flag -rdynamic would expose all symbols to the dynamic
+symbol table, but it looks like in rare cases not all symbols are actually exposed...
+
+One case was when the file "simulator/cinterface.c" is compiled and linked as part of the
+simulator, all its functions are not put into the dynamic symbol table, however
+having another part of the simulator call a function in this module (hence the
+existence of the function noop()) would make the symbols show up.
+
+The other case was in the module io.so. Three predicates, str_to_term, readterm,
+and read are broken because the function "FRONT_RT_readTermAndType" that they call
+cannot be located during dynamic linking. Examining the tjsim executable shows
+that this symbol in not included in the dynamic symbol table.
+
+I'm investigating #4.
