@@ -35,6 +35,8 @@ existence of the function noop()) would make the symbols show up.
 The other case was in the module io.so. Three predicates, str_to_term, readterm,
 and read are broken because the function "FRONT_RT_readTermAndType" that they call
 cannot be located during dynamic linking. Examining the tjsim executable shows
-that this symbol in not included in the dynamic symbol table.
-
-I'm investigating #4.
+that this symbol in not included in the dynamic symbol table. One way to get
+around this is to use the same trick as above, but I'm leaving it as it is because
+I'd like to try to find a more elegant solution. Right now it seems that this
+problem shows up for those "standalone" functions - functions that are not being
+called in any other parts of the tjsim executable.
