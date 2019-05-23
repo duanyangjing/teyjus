@@ -89,7 +89,7 @@ FNT_ML[] =
     $(FNT)/parseargs
 
 FNT_C[] =
-    $(FNT)/ccode_stubs
+    $(FNT)/ccode_stubs_c
     $(FNT)/front_c
     $(FNT)/query_c
     $(FNT)/readterm_c
@@ -101,6 +101,7 @@ FNT_ML_TO_C[] =
     $(FNT)/front
     $(FNT)/readterm
     $(FNT)/simerrors
+    $(FNT)/ccode_stubs
 
 SIM_C[] =
     $(SIM)/abstmachine
@@ -292,7 +293,7 @@ if $(not $(file-exists prebuilt))
       $(SIM_C) $(SYS_C) $(TBL_C) $(FNT_C) $(LOD_C) $(LNK_C) $(INC_C))
     OCAML_CLIBS += libsim
     OCamlProgram(tjsim, \
-      $(SIM_MAIN) $(LOD_ML) $(CMP_ML) $(FNT_ML) $(FNT_ML_TO_C))
+      $(FNT_ML_TO_C) $(SIM_MAIN) $(LOD_ML) $(CMP_ML) $(FNT_ML))
 
   section
     StaticCLibrary(liblink, $(SIM_C) $(SYS_C) $(TBL_C) $(LNK_C) $(INC_C))
