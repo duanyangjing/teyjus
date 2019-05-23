@@ -24,32 +24,7 @@
  *                                                                          *
  ****************************************************************************/
 #include <stdlib.h>
-#include <string.h>
-#include <stdio.h> 
-#include "../source/simulator/C-interface/interface.h"
-
-// DJ: Looks like only these two helper functions are needed from io.c
-
-/* get string from an lpwam string term pointer */
-static char* getStringFromTerm(DF_TermPtr tmPtr)
-{
-    HN_hnorm(tmPtr);
-    tmPtr = DF_termDeref(tmPtr);
-    if (DF_isStr(tmPtr)) return MCSTR_toCString(DF_strValue(tmPtr));
-    else return NULL;
-}
-
-/* Given an lpwam VAR term pointer, and an integer value,
-   bind the variable term to the given integer. */
-static void bindVarToInt(DF_TermPtr varPtr, int integer)
-{
-    HN_hnorm(varPtr);
-    varPtr = DF_termDeref(varPtr);
-    if (!DF_isFV(varPtr)) EM_error(BI_ERROR_NON_VAR_TERM, varPtr);
-
-    TR_trailTerm(varPtr);
-    DF_mkInt((MemPtr)varPtr, integer);
-}
+#include "../source/simulator/cinterface.h"
 
 /* type getenv string -> string -> o.
         getenv Name Value.
@@ -59,65 +34,60 @@ static void bindVarToInt(DF_TermPtr varPtr, int integer)
 void getEnv()
 {
     //NOTE: os dependent; need to add code for other os besides UNIX.
-    char     *str, *envstr;
-    int      length, size;
-    MemPtr   strDataHead = AM_hreg;
-    MemPtr   strData     = strDataHead + DF_STRDATA_HEAD_SIZE;
-    MemPtr   nhreg;
-
-    str = getStringFromTerm((DF_TermPtr)AM_reg(1));
-    if (!str) EM_error(BI_ERROR_UNBOUND_VARIABLE, "string");
-
-    envstr = getenv(str);
-    if (envstr == NULL) EM_error(BI_ERROR_UNSET_ENV_VAR, str);
-
-    length = strlen(envstr);
-    size   = MCSTR_numWords(length);
-    nhreg  = strData + size;
+  char* str = TJ_getStr(1);
+  char* envstr = getenv(str);
+  TJ_returnStr(2, envstr);
   
-    AM_heapError(nhreg);
-    DF_mkStrDataHead(strDataHead);
-    MCSTR_toString((MCSTR_Str)strData, envstr, length);
-    AM_hreg = nhreg;   
+    /* char     *str, *envstr; */
+    /* int      length, size; */
+    /* MemPtr   strDataHead = AM_hreg; */
+    /* MemPtr   strData     = strDataHead + DF_STRDATA_HEAD_SIZE; */
+    /* MemPtr   nhreg; */
+
+    /* str = getStringFromTerm((DF_TermPtr)AM_reg(1)); */
+    /* if (!str) EM_error(BI_ERROR_UNBOUND_VARIABLE, "string"); */
+
+    /* envstr = getenv(str); */
+    /* if (envstr == NULL) EM_error(BI_ERROR_UNSET_ENV_VAR, str); */
+
+    /* length = strlen(envstr); */
+    /* size   = MCSTR_numWords(length); */
+    /* nhreg  = strData + size; */
+  
+    /* AM_heapError(nhreg); */
+    /* DF_mkStrDataHead(strDataHead); */
+    /* MCSTR_toString((MCSTR_Str)strData, envstr, length); */
+    /* AM_hreg = nhreg;    */
  
-    DF_mkStr((MemPtr)AM_reg(1), (DF_StrDataPtr)strDataHead);
-    AM_preg = AM_eqCode;
-    return;
+    /* DF_mkStr((MemPtr)AM_reg(1), (DF_StrDataPtr)strDataHead); */
+    /* AM_preg = AM_eqCode; */
+    /* return; */
 }
 
 
 /* type  system  string -> int -> o
    system Command ReturnCode.
 */
-void sys()
+void syscmd()
 {
-  char * command = NULL;
-  int result = -1;
+  char* str = TJ_getStr(1);
+  int ret = system(str);
+  TJ_returnInt(2, ret);
 
-  //Grab the command; it must be bound.
-  command = getStringFromTerm((DF_TermPtr)AM_reg(1));
-  if (!command) EM_error(BI_ERROR_UNBOUND_VARIABLE, "string");
+  
+  /* char * command = NULL; */
+  /* int result = -1; */
 
-  //Execute
-  result = system(command);
+  /* //Grab the command; it must be bound. */
+  /* command = getStringFromTerm((DF_TermPtr)AM_reg(1)); */
+  /* if (!command) EM_error(BI_ERROR_UNBOUND_VARIABLE, "string"); */
 
-  //Store result.
-  bindVarToInt((DF_TermPtr)AM_reg(2), result);
+  /* //Execute */
+  /* result = system(command); */
 
-  AM_preg = AM_cpreg;
-  return;
-}
+  /* //Store result. */
+  /* bindVarToInt((DF_TermPtr)AM_reg(2), result); */
 
-
-/* type  time  int -> int -> o
-   time X Y
-   Uses the Unix gettimeofday function to get the number of seconds and
-   microseconds in X and Y since 00:00 Universal Coordinated Time,
-   January 1, 1970. The arguments are expected to be uninstantiated
-   variables
-*/
-void unixTime()
-{
-  //to be filled in
-  EM_error(BI_ERROR_NOT_IMPLEMENTED);
+  /* AM_preg = AM_cpreg; */
+  /* return; */
 }

@@ -44,9 +44,9 @@ void BIIO_printTerm();
 void BIIO_termToStr();
 void BIIO_strToTerm();
 void BIIO_readTerm();
-void BIIO_getEnv();
+//void BIIO_getEnv(); - externalized
 void BIIO_openSocket();
 void BIIO_unixTime();
-void BIIO_system();
+//void BIIO_system(); - externalized
 
 #endif  //IO_H

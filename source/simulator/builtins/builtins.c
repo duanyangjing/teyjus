@@ -29,7 +29,7 @@
 #include "meta.h"
 #include "evalexp.h"
 #include "compexp.h"
-// #include "io.h" DJ - io is externalized
+#include "io.h"
 #include "../mctypes.h"
 #include "../dataformats.h"
 #include "../printterm.h"
@@ -63,6 +63,29 @@ static void (*BI_branchTab[BI_TAB_SIZE])() =
     BICOMP_comp,                  //BI_STR_GT         
     BICOMP_comp,                  //BI_STR_LE      
     BICOMP_comp,                  //BI_STR_GE
+
+    BIIO_openIn,
+    BIIO_openOut,
+    BIIO_openApp,
+    BIIO_closeIn,
+    BIIO_closeOut,
+    BIIO_openStr,
+    BIIO_input,
+    BIIO_output,
+    BIIO_inputLine,
+    BIIO_lookahead,
+    BIIO_eof,
+    BIIO_flush,
+    BIIO_print,
+    BIIO_read,
+    BIIO_printTerm,
+    BIIO_termToStr,
+    BIIO_strToTerm,
+    BIIO_readTerm,
+    //void BIIO_getEnv(); - externalized
+    BIIO_openSocket,
+    BIIO_unixTime
+    //void BIIO_system(); - externalized
 };
 
 /* builtin index "register" */

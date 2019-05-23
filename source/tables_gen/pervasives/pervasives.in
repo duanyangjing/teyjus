@@ -24,9 +24,9 @@
    /% section II.I : type skeletion and constant declarations %/
 
    /% number of pervasive constants %/
-   CONST                   69
+   CONST                   89
    /% number of type skeletons      %/
-   TYPE SKEL               27 
+   TYPE SKEL               41 
 
    /% type skeleton and constant data table %/
    /% type skeleton format:                       
@@ -39,38 +39,38 @@
       /* A */ 
       TYPE      0      #0 
        /* for unnamed universal constants (Note: tesize should be 0)*/
-       60 <constant>       univ  0 0  0  TRUE   FALSE  0   NOFIXITY NOCODE
+       80 <constant>       univ  0 0  0  TRUE   FALSE  0   NOFIXITY NOCODE
       ;;
 
       /* (list A) */
       TYPE      1      (@ list 1 [#0])
        /* nil */
-       64 nil              nil   0 1  0  TRUE   FALSE  0   NOFIXITY NOCODE  
+       84 nil              nil   0 1  0  TRUE   FALSE  0   NOFIXITY NOCODE  
       ;;
 
 
       /* A->(list A)->(list A) */
       TYPE      2      #0 -> (@ list 1 [#0]) -> (@ list 1 [#0])
        /* cons */
-       68  ::              cons  0 1  0  TRUE   FALSE  140 INFIXR   NOCODE
+       88  ::              cons  0 1  0  TRUE   FALSE  140 INFIXR   NOCODE
       ;;
 
       /* int */  
       TYPE      3      int
        /* integer constant */
-       65  <int_constant>  intc  0 0  0  TRUE   FALSE  0   NOFIXITY NOCODE
+       85  <int_constant>  intc  0 0  0  TRUE   FALSE  0   NOFIXITY NOCODE
       ;;
 
       /* real */   
       TYPE      4      real
        /*  real constant */
-       66  <real_constant> realc 0 0  0  TRUE   FALSE  0   NOFIXITY NOCODE
+       86  <real_constant> realc 0 0  0  TRUE   FALSE  0   NOFIXITY NOCODE
       ;; 
 
       /* string */  
       TYPE      5      string
        /* string constant */
-       67  <str_constant>  strc  0 0  0  TRUE   FALSE  0   NOFIXITY NOCODE
+       87  <str_constant>  strc  0 0  0  TRUE   FALSE  0   NOFIXITY NOCODE
       ;;
 
       /* o (type of proposition)*/
@@ -90,23 +90,23 @@
       /* int -> int */
       TYPE      7      int -> int
         /* unary minus on integers */
-       31  %i~        intuminus  0 0  0  TRUE   FALSE  MAX PREFIX   NOCODE -
+       51  %i~        intuminus  0 0  0  TRUE   FALSE  MAX PREFIX   NOCODE -
         /* integer abs */
-       38  %iabs        iabs       0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE abs
+       58  %iabs        iabs       0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE abs
       ;;
 
       /* int -> int -> int */
       TYPE      8      int -> int -> int
         /* addition on integers */
-       32  %i+        intplus    0 0  0  TRUE   FALSE  150 INFIXL   NOCODE +
+       52  %i+        intplus    0 0  0  TRUE   FALSE  150 INFIXL   NOCODE +
         /* subtraction on integers */
-       33  %i-        intminus   0 0  0  TRUE   FALSE  150 INFIXL   NOCODE -
+       53  %i-        intminus   0 0  0  TRUE   FALSE  150 INFIXL   NOCODE -
         /* mutiplication on integers */
-       34  %i*        intmult    0 0  0  TRUE   FALSE  160 INFIXL   NOCODE *
+       54  %i*        intmult    0 0  0  TRUE   FALSE  160 INFIXL   NOCODE *
         /* integer division */
-       35  div        intdiv     0 0  0  TRUE   FALSE  160 INFIXL   NOCODE
+       55  div        intdiv     0 0  0  TRUE   FALSE  160 INFIXL   NOCODE
         /* modulus */
-       36  mod        mod        0 0  0  TRUE   TRUE   160 INFIXL   NOCODE
+       56  mod        mod        0 0  0  TRUE   TRUE   160 INFIXL   NOCODE
       ;;
 
       /* int -> int -> o */  
@@ -119,58 +119,60 @@
        21  %i<=       intleq     0 0  0  TRUE   FALSE  130 INFIX    6   <=
         /* greater than or eq on integers*/
        22  %i>=       intgeq     0 0  0  TRUE   FALSE  130 INFIX    7   >=
+        /* time predicate */
+       50  time       time       0 0  0  TRUE   TRUE   0   NOFIXITY 36
       ;;
 
       /* int -> real */ 
       TYPE      10     int -> real
         /* coercion to real */
-       37  int_to_real itor      0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       57  int_to_real itor      0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
       ;;
 
       /* real -> int */
       TYPE      11     real -> int
         /* floor function */
-       49  floor      floor      0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       69  floor      floor      0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
         /* ceiling function */
-       50  ceil       ceil       0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       70  ceil       ceil       0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
         /* truncation */
-       51  truncate   trunc      0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       71  truncate   trunc      0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
       ;;
 
       /* real -> real */
       TYPE      12     real -> real
         /* unary minus on real */
-       39  %r~        realuminus 0 0  0  TRUE   FALSE  MAX PREFIX   NOCODE -
+       59  %r~        realuminus 0 0  0  TRUE   FALSE  MAX PREFIX   NOCODE -
         /* square root */
-       44  sqrt       sqrt       0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       64  sqrt       sqrt       0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
         /* sine */
-       45  sin        sin        0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       65  sin        sin        0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
         /* cosine */
-       46  cos        cos        0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       66  cos        cos        0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
         /* arc tan */
-       47  arctan     arctan     0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       67  arctan     arctan     0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
         /* natural log */
-       48  ln         log        0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       68  ln         log        0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
         /* real abs */
-       52  %rabs      rabs       0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE rabs
+       72  %rabs      rabs       0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE rabs
       ;;
 
       /* real -> string */ 
       TYPE      13     real -> string 
         /* real to string */
-       59  real_to_string  rtos  0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       79  real_to_string  rtos  0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
       ;;
 
       /* real -> real -> real */
       TYPE      14     real -> real -> real
         /* addition on reals */
-       40  %r+        realplus   0 0  0  TRUE   FALSE  150 INFIXL   NOCODE +
+       60  %r+        realplus   0 0  0  TRUE   FALSE  150 INFIXL   NOCODE +
         /* subtraction on reals */
-       41  %r-        realminus  0 0  0  TRUE   FALSE  150 INFIXL   NOCODE -
+       61  %r-        realminus  0 0  0  TRUE   FALSE  150 INFIXL   NOCODE -
         /* multiplication on reals */
-       42  %r*        realmult   0 0  0  TRUE   FALSE  160 INFIXL   NOCODE *
+       62  %r*        realmult   0 0  0  TRUE   FALSE  160 INFIXL   NOCODE *
         /* division */
-       43  /          realdiv    0 0  0  TRUE   FALSE  160 INFIXL   NOCODE
+       63  /          realdiv    0 0  0  TRUE   FALSE  160 INFIXL   NOCODE
       ;;
 
       /* real -> real -> o */  
@@ -188,23 +190,23 @@
       /* string -> int */ 
       TYPE      16     string -> int
         /* string length */
-       54  size          slen    0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       74  size          slen    0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
         /* ord function */
-       56  string_to_int stoi    0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       76  string_to_int stoi    0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
       ;;
 
       /* int -> string */
       TYPE      17     int -> string
         /* chr function */
-       55  chr           itochr  0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       75  chr           itochr  0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
         /* int to string */
-       58  int_to_string itostr  0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       78  int_to_string itostr  0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
       ;;
 
       /* string -> string -> string */ 
       TYPE      18     string -> string -> string 
         /* string concatination */
-       53  ^          scat       0 0  0  TRUE   TRUE   150 INFIXL    NOCODE   
+       73  ^          scat       0 0  0  TRUE   TRUE   150 INFIXL    NOCODE   
       ;;
 
       /* string -> string -> o */
@@ -222,7 +224,7 @@
       /* string -> int -> int -> string */
       TYPE      20     string -> int -> int -> string
         /* substring */
-       57  substring  substr     0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       77  substring  substr     0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
       ;;
 
       /* o -> o -> o */
@@ -244,7 +246,7 @@
         /* existential quantifier */   
         2  sigma      some       1 1  1  FALSE  FALSE  0   NOFIXITY NOCODE
         /* universal quantifier */
-	3  pi         all        1 1  1  FALSE  FALSE  0   NOFIXITY NOCODE
+	    3  pi         all        1 1  1  FALSE  FALSE  0   NOFIXITY NOCODE
       ;;
 
       /* A -> A -> o */
@@ -258,23 +260,117 @@
       /* in_stream */
       TYPE      24     instream
         /* std_in */
-       61  std_in     stdin      0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       81  std_in     stdin      0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
       ;;
 
       /* out_stream */
       TYPE      25     outstream
         /* std_out */
-       62  std_out    stdout     0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       82  std_out    stdout     0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
         /* std_err */
-       63  std_err    stderr     0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+       83  std_err    stderr     0 0  0  TRUE   TRUE   0   NOFIXITY NOCODE
+      ;;
+
+      /* string -> in_stream -> o */  
+      TYPE      26     string -> instream -> bool
+        /* open_in */ 
+       31  open_in     openin    0 0  0  TRUE   TRUE   0   NOFIXITY 16
+        /* open_string */
+       36  open_string openstr   0 0  0  TRUE   TRUE   0   NOFIXITY 21 
+      ;;
+
+      /* string -> out_stream -> o */  
+      TYPE      27     string -> outstream -> bool   
+        /* open_out */
+       32  open_out    openout   0 0  0  TRUE   TRUE   0   NOFIXITY 17
+        /* open_append */
+       33  open_append openapp   0 0  0  TRUE   TRUE   0   NOFIXITY 18
+      ;;
+
+      /* in_stream -> o */         
+      TYPE      28     instream -> bool 
+        /* close_in */
+       34  close_in    closein   0 0  0  TRUE   TRUE   0   NOFIXITY 19
+        /* eof      */
+       41  eof         eof       0 0  0  TRUE   TRUE   0   NOFIXITY 26
+      ;;
+
+      /* out_stream -> o */        
+      TYPE      29     outstream -> bool
+        /* close_out */
+       35  close_out   closeout  0 0  0  TRUE   TRUE   0   NOFIXITY 20
+        /* flush     */
+       42  flush       flush     0 0  0  TRUE   TRUE   0   NOFIXITY 27
+      ;;
+
+      /* A -> string -> o */ 
+      TYPE      30     #0 -> string -> bool
+        /* term_to_string */
+       46  term_to_string termtostr 1 1 0 FALSE TRUE   0   NOFIXITY 31
+      ;;
+
+      /* string -> A -> o */
+      TYPE      31     string -> #0 -> bool
+        /* string_to_term */
+       47  string_to_term strtoterm 1 1 1 FALSE TRUE   0   NOFIXITY 32
+      ;;
+
+      /* out_stream -> string -> o */ 
+      TYPE      32     outstream -> string -> bool
+        /* output */
+       38  output     output     0 0  0  TRUE   TRUE   0   NOFIXITY 23
+      ;;
+
+      /* in_stream -> int -> string -> o */ 
+      TYPE      33     instream -> int -> string -> bool
+        /* input */
+       37  input      input      0 0  0  TRUE   TRUE   0   NOFIXITY 22
+      ;;
+
+      /* in_stream -> string -> o */   
+      TYPE      34     instream -> string -> bool
+        /* input_line */
+       39  input_line inputline  0 0  0  TRUE   TRUE   0   NOFIXITY 24
+        /* lookahead */
+       40  lookahead lookahead  0 0  0  TRUE   TRUE   0   NOFIXITY 25
+      ;;
+
+      /* string -> o */            
+      TYPE      35     string -> bool
+        /* print  */
+       43  print      print      0 0  0  TRUE   TRUE   0   NOFIXITY 28
+      ;;
+
+      /* A -> o */                 
+      TYPE      36     #0 -> bool
+        /* read   */
+       44  read       read       1 1  1  FALSE  TRUE   0   NOFIXITY 29
+      ;;
+
+      /* out_stream -> A -> o */   
+      TYPE      37     outstream -> #0 -> bool    
+        /* printterm */
+       45  printterm  printterm  1 1  0  FALSE  TRUE   0   NOFIXITY 30
+      ;;
+
+      /* in_stream -> A -> o */    
+      TYPE      38     instream -> #0 -> bool
+        /* readterm */
+       48  readterm   readterm   1 1  1  FALSE  TRUE   0   NOFIXITY 33
       ;;
 
       /* o -> o */         
-      TYPE      26     bool -> bool
+      TYPE      39     bool -> bool
         /* solve; used by code generator */
        15  solve      solve      0 0  0  TRUE   FALSE  0   NOFIXITY 0
         /* not */
        17  not        not        0 0  0  TRUE   FALSE  0   NOFIXITY 2
+      ;;
+
+      /* string -> int -> in_stream -> out_stream -> o */ 
+      TYPE      40     string -> int -> instream -> outstream -> bool
+        /* open_socket predicate */
+       49 open_socket opensocket 0 0  0  FALSE  TRUE   0   NOFIXITY 35
 
 
    /% pervasive constant classification %/
@@ -293,9 +389,9 @@
                 9        halt
                 10       stop
 			  	
-   PRED SYMBOL  37
-                PRED_START solve  PRED_END cons
+   PRED SYMBOL  35
+                PRED_START solve  PRED_END time
              
-   REGCL  solve not is
+   REGCL  solve not strtoterm readterm read is lookahead input inputline
    
    BACKTRACK eq

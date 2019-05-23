@@ -1,21 +1,48 @@
 /lib/ contains a list of libraries I have made for testing purposes.
 
-io.so and os.so contain the original io and os builtins that are now externalized.
-Please note that when these parts are externalized we were using the old idea of
-directly exposing simulator internal symbols. So they are including the "old"
-interface file in "source/simulator/C-interface/interface.h".
-
-The other two libraries:
+The other three libraries:
   arith.so - contains some math predicates
   str.so   - contains a predicate to reverse a string
-They use the new interface in "source/simulator/cinterface.h", which has encapsulated
-some of the interface functions.
+  os.so    - contains the externalized getenv and system predicate from io.c
 
+A note about streams - why other functions in io.c was not externalized
+-----------------------------------------------------------------------
+Teyjus maintains its own stream implementation. Adding support for the current
+stream implementation in the simulator interface does not suit the spirit of the
+interface very well.
 
-Known Issues
-------------
-1. In the end we definitely would like to use one single interface file, which means
-the code in the io and os module would have to be rewritten.
+One way to look at the problem is that the treatment of streams in builtins
+usually involves first getting the stream object, and then manipulating the
+stream by calling functions implemented on Teyjus streams. These functions
+belong to the simulator, which are not independent C computation. This does not
+fit into the model of the C interface, which requires an independent C
+computation between the marshalling/unmarshalling procedures.
+
+Here is another way to look at the problem: A Teyjus stream conceptually
+represents a sequence of characters, possibly from either a file or a string. In
+C we have FILE pointer which might correspond to a file stream, and a C string
+which corresponds to a string stream, but there is no such an object that
+provides an abstract view of both. More importantly, a stream is not just a file
+pointer or a char pointer, it requires many other bookeeping about the data,
+such as the allocated buffer, read/write offset, etc. And the manipulation of
+these data is usually hidden from programmers - by calling the library
+stdio.h. It's not recommended at all for a C programmer to directly manipulate a
+FILE object. So under this context, suppose we want to expose a "stream for
+file f from which we have read 5 characters"? We would need to create a FILE
+pointer and manipulate its internal data to reflect the offset, which strongly
+violates the practice of using a C FILE pointer. The only possible workaround
+for this is to use the SAME device to manipulate a Teyjus file stream as to a C
+FILE pointer, which is to read/write data using the stdio.h functions. In this
+way we might be able to directly pass the FILE pointer around between Teyjus and
+C, and allow programmers to manipulate in C a FILE pointer that has been created
+and updated in Teyjus.
+
+As a result all functions that involve streams are not externalized. All
+functions except getenv and system in the original file builtins/io.c are
+treated this way. Some io functions (like print) do not have streams as
+arguments, but they directly manipulate the predefined streams such as std_in,
+std_out, etc.
+
 
 2. Four subsystems can be successfully built, including tjcc, tjlink, tjsim, tjdis.
 tjdepend and tjparse do not compile for now, but should be easy to fix.

@@ -25,22 +25,21 @@
  ****************************************************************************/
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include "../C-interface/interface.h"
-/* #include "builtins.h" */
-/* #include "readterm.h" */
-/* #include "../abstmachine.h"  */
-/* #include "../dataformats.h"  */
-/* #include "../hnorm.h"        */
-/* #include "../mcstring.h"     */
-/* #include "../mctypes.h"      */
-/* #include "../trail.h"        */
-/* #include "../printterm.h"    */
-/* #include "../types.h" */
-/* #include "../../tables/pervasives.h"  */
-/* #include "../../system/error.h"       */
-/* #include "../../system/stream.h"     */
-/* #include "../../front/readterm_c.h" */ 
+#include <stdio.h> 
+#include "builtins.h"
+#include "readterm.h"
+#include "../abstmachine.h" 
+#include "../dataformats.h" 
+#include "../hnorm.h"       
+#include "../mcstring.h"    
+#include "../mctypes.h"     
+#include "../trail.h"       
+#include "../printterm.h"   
+#include "../types.h"
+#include "../../tables/pervasives.h" 
+#include "../../system/error.h"      
+#include "../../system/stream.h"    
+#include "../../front/readterm_c.h" 
 
 
 /* unify types */
@@ -585,5 +584,18 @@ void BIIO_termToStr()
 */
 void BIIO_openSocket()
 {
+  EM_error(BI_ERROR_NOT_IMPLEMENTED);
+}
+
+/* type  time  int -> int -> o
+   time X Y
+   Uses the Unix gettimeofday function to get the number of seconds and
+   microseconds in X and Y since 00:00 Universal Coordinated Time,
+   January 1, 1970. The arguments are expected to be uninstantiated
+   variables
+*/
+void BIIO_unixTime()
+{
+  //to be filled in
   EM_error(BI_ERROR_NOT_IMPLEMENTED);
 }

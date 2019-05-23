@@ -4,20 +4,61 @@
 #include "dataformats.h"
 #include "mcstring.h"
 #include "../system/error.h"
+#include "hnorm.h"
+#include "builtins/builtins.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
+/* get value of an lpwam integer term pointer */
+static int getIntegerFromTerm(DF_TermPtr tmPtr)
+{
+  HN_hnorm(tmPtr);
+  tmPtr = DF_termDeref(tmPtr);
+  if (DF_isInt(tmPtr)) return DF_intValue(tmPtr);
+
+  // DJ, May 22 2019
+  // the original builtin doesn't have the second argument, so
+  // it gives a segfault when trying to print the term itself in
+  // the error message.
+  EM_error(BI_ERROR_INTEGER_EXPECTED, tmPtr);
+
+  //Impossible to reach this point.
+  return 0;
+}
+
+static float getFloatFromTerm(DF_TermPtr tmPtr)
+{
+  HN_hnorm(tmPtr);
+  tmPtr = DF_termDeref(tmPtr);
+  if (DF_isFloat(tmPtr)) return DF_floatValue(tmPtr);
+
+  //  TODO: need to add float expected
+  EM_error(BI_ERROR_INTEGER_EXPECTED);
+
+  //Impossible to reach this point.
+  return 0;
+}
+
+static char* getStringFromTerm(DF_TermPtr tmPtr)
+{
+  HN_hnorm(tmPtr);
+  tmPtr = DF_termDeref(tmPtr);
+  if (DF_isStr(tmPtr)) return MCSTR_toCString(DF_strValue(tmPtr));
+  // TODO: need to add string expected
+  return NULL;
+}
 
 int TJ_getInt(int i)
 {
+  // TODO: might want to make this the same as other error handling
   if (i < 0 || i >= AM_NUM_OF_REG) {
     printf("Argument index must be in range [%d,%d)\n", 0, AM_NUM_OF_REG);
     exit(-1);
   }
   DF_TermPtr t = (DF_TermPtr)AM_reg(i);
-  int val = BIEVAL_evalInt(t);
+  int val = getIntegerFromTerm(t);
 
   return val;
 }
@@ -29,21 +70,20 @@ float TJ_getReal(int i)
     exit(-1);
   }
   DF_TermPtr t = (DF_TermPtr)AM_reg(i);
-  float val = BIEVAL_evalFloat(t);
+  float val = getFloatFromTerm(t);
 
   return val;
 }
 
 
-const char* TJ_getStr(int i)
+char* TJ_getStr(int i)
 {
   if (i < 0 || i >= AM_NUM_OF_REG) {
     printf("Argument index must be in range [%d,%d)\n", 0, AM_NUM_OF_REG);
     exit(-1);
   }
   DF_TermPtr t = (DF_TermPtr)AM_reg(i);
-  DF_StrDataPtr sdata = BIEVAL_evalStr(t);
-  char* s = DF_strDataToCString(sdata);
+  char* s = getStringFromTerm(t);
   /* char* val = malloc((strlen(s)+1) * sizeof(char)); */
   /* strcpy(val, s); */
 
@@ -109,7 +149,7 @@ void TJ_returnStr(int i, char* s)
 }
 
 /* 
- * Maybe I missed something from the build tool, but it seems only when the 
+ * DJ, Maybe I missed something from the build tool, but it seems only when the 
  * simulator calls some function in this file is this file being linked 
  * with the simulator. So this function is called by BIEVAL_eval().
  */

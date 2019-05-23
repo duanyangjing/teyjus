@@ -4,7 +4,7 @@
 /* Get data from argument register i */
 int TJ_getInt(int i);
 float TJ_getReal(int i);
-const char* TJ_getStr(int i);
+char* TJ_getStr(int i);
 
 /*
  * Unify the return value of a C function with an existing term at 
