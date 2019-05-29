@@ -143,7 +143,7 @@ let writeModule m clauses newclauses oc =
       match t with
         | ConstantTerm(
               Constant(sym, fix, prec, expdef, use, nodefs, closed, tpres, red, 
-                     skel, tenvSize, skelNeed, need, cinfo, ct, index, p) 
+                     skel, tenvSize, skelNeed, need, cinfo, ct, index, extinfo, p) 
                 as const, 
               atypList,
               constPos)  -> 
@@ -185,7 +185,7 @@ let writeModule m clauses newclauses oc =
   
   match m with
     | Module(name, implist, acclist, _, _, _, _, _, 
-             lkinds, _, lconsts, _, _, _, ci) ->
+             lkinds, _, lconsts, _, _, _, ci, _) ->
         writeLine oc ("module " ^ name ^ ".");
         List.iter (writeImp oc)  implist;
         List.iter (writeAcc oc) acclist;
@@ -202,7 +202,7 @@ let writeModule m clauses newclauses oc =
     
 let writeModuleSignature s oc =
   match s with
-    | Module(name, _, _, _, _, _, _, gkinds, _, gconsts, _, _, _, _, _) ->
+    | Module(name, _, _, _, _, _, _, gkinds, _, gconsts, _, _, _, _, _, _) ->
         writeLine oc ("sig " ^ name ^ ".");
         writeLine oc "";
         if !interp && !explicit then writeLine oc Explicit.interpreter_sig;

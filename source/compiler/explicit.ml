@@ -389,7 +389,7 @@ let add_constants amod =
   match amod with
     | Module(modname, modimps, modaccs, ctable, ktable, atable, astring,
                    gkinds, lkinds, gconsts, lconsts, hconsts, skels, hskels,
-                   aclinfo ) ->
+                   aclinfo, aextfuns ) ->
         let gconsts_exp = List.map explicit_const_ty gconsts in
         let lconsts_exp = List.map explicit_const_ty lconsts in
         let hconsts_exp = List.map explicit_const_ty !hconsts in
@@ -397,7 +397,7 @@ let add_constants amod =
                            fact_constant::forall_constant::gconsts_exp in
         Module(modname, modimps, modaccs, ctable, ktable, atable, astring,
                      gkinds, lkinds, gconsts_exp', lconsts_exp, 
-                     ref hconsts_exp, skels, hskels, aclinfo)
+                     ref hconsts_exp, skels, hskels, aclinfo, aextfuns)
     | _ -> amod
 
 
