@@ -60,6 +60,7 @@ DEP_ML[] =
     $(CMP)/errormsg
     $(CMP)/symbol
     $(CMP)/preabsyn
+    $(CMP)/option
     $(CMP)/table
 
 PAR_ML[] =
